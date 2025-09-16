@@ -89,7 +89,7 @@ export function BansTable({ bans }: BansTableProps) {
                   transition={{ delay: index * 0.05 }}
                   className="hover:bg-muted/50"
                 >
-                  <TableCell className="font-medium">{ban.name}</TableCell>
+                  <TableCell className="font-medium truncate max-w-xs">{ban.name}</TableCell>
                   <TableCell className="max-w-xs truncate">{ban.reason}</TableCell>
                   <TableCell>{ban.banned_by}</TableCell>
                   <TableCell>
@@ -132,7 +132,7 @@ export function BansTable({ bans }: BansTableProps) {
               <Card className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <div className="font-medium mb-1">{ban.name}</div>
+                    <div className="font-medium mb-1 truncate">{ban.name}</div>
                     <div className="text-sm text-muted-foreground">Banido por: {ban.banned_by}</div>
                   </div>
                   <DropdownMenu>

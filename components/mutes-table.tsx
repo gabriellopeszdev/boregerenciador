@@ -107,7 +107,7 @@ export function MutesTable({ mutes }: MutesTableProps) {
                     {mute.reason}
                   </TableCell>
                   <TableCell>
-                    {(mute as any).muted_by_name || `User #${mute.muted_by}`}
+                    {(mute as any).muted_by || `${mute.muted_by}`}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -160,7 +160,7 @@ export function MutesTable({ mutes }: MutesTableProps) {
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Mutado por:{" "}
-                      {(mute as any).muted_by_name || `User #${mute.muted_by}`}
+                      {(mute as any).muted_by || `User #${mute.muted_by}`}
                     </div>
                   </div>
                   {mute.active && (
