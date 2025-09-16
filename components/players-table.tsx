@@ -53,32 +53,38 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
 
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE);
 
-  const getRoleIcon = (player: Player) => {
-    if (player.ceo === 1) return <Crown className="h-4 w-4 text-yellow-500" />
-    if (player.diretor === 1) return <Shield className="h-4 w-4 text-purple-500" />
-    if (player.admin === 1) return <Star className="h-4 w-4 text-blue-500" />
-    if (player.gerente === 1) return <Briefcase className="h-4 w-4 text-green-500" />
-    if (player.mod === 1) return <Gavel className="h-4 w-4 text-orange-500" />
-    return null
-  }
+const getRoleIcon = (player: Player) => {
+  if (player.ceo === 1) return <Crown className="h-4 w-4 text-yellow-500" />
+  if (player.diretor === 1) return <Shield className="h-4 w-4 text-purple-500" />
+  // highlight-start
+  if (player.admin && player.admin.length > 0) return <Star className="h-4 w-4 text-blue-500" />
+  if (player.gerente && player.gerente.length > 0) return <Briefcase className="h-4 w-4 text-green-500" />
+  if (player.mod && player.mod.length > 0) return <Gavel className="h-4 w-4 text-orange-500" />
+  // highlight-end
+  return null
+}
 
-  const getRoleName = (player: Player) => {
-    if (player.ceo === 1) return "CEO"
-    if (player.diretor === 1) return "Diretor"
-    if (player.admin === 1) return "Admin"
-    if (player.gerente === 1) return "Gerente"
-    if (player.mod === 1) return "Moderador"
-    return "Player"
-  }
+const getRoleName = (player: Player) => {
+  if (player.ceo === 1) return "CEO"
+  if (player.diretor === 1) return "Diretor"
+  // highlight-start
+  if (player.admin && player.admin.length > 0) return "Admin"
+  if (player.gerente && player.gerente.length > 0) return "Gerente"
+  if (player.mod && player.mod.length > 0) return "Moderador"
+  // highlight-end
+  return "Player"
+}
 
-  const getRoleColor = (player: Player) => {
-    if (player.ceo === 1) return "bg-yellow-500/20 text-yellow-300"
-    if (player.diretor === 1) return "bg-purple-500/20 text-purple-300"
-    if (player.admin === 1) return "bg-blue-500/20 text-blue-300"
-    if (player.gerente === 1) return "bg-green-500/20 text-green-300"
-    if (player.mod === 1) return "bg-orange-500/20 text-orange-300"
-    return "bg-gray-500/20 text-gray-300"
-  }
+const getRoleColor = (player: Player) => {
+  if (player.ceo === 1) return "bg-yellow-500/20 text-yellow-300"
+  if (player.diretor === 1) return "bg-purple-500/20 text-purple-300"
+  // highlight-start
+  if (player.admin && player.admin.length > 0) return "bg-blue-500/20 text-blue-300"
+  if (player.gerente && player.gerente.length > 0) return "bg-green-500/20 text-green-300"
+  if (player.mod && player.mod.length > 0) return "bg-orange-500/20 text-orange-300"
+  // highlight-end
+  return "bg-gray-500/20 text-gray-300"
+}
 
   const handleBanPlayer = (player: Player) => {
     setSelectedPlayer(player)

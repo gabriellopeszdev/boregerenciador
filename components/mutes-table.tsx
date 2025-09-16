@@ -160,7 +160,7 @@ export function MutesTable({ mutes }: MutesTableProps) {
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Mutado por:{" "}
-                      {(mute as any).muted_by_name || `User #${mute.muted_by}`}
+                      {(mute as any).muted_by_name || ${mute.muted_by}`}
                     </div>
                   </div>
                   {mute.active && (

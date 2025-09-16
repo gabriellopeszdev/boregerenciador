@@ -21,7 +21,7 @@ interface BanPlayerDialogProps {
   player: Player | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentUser: any
+  currentUser: any // Você pode querer tipar isso melhor depois
 }
 
 export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: BanPlayerDialogProps) {
@@ -33,15 +33,14 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  // Adicione este useEffect para preencher os estados
   useEffect(() => {
     if (player) {
-      setConn(player.conn || "");
-      setIpv4(player.ipv4 || "");
-      setAuth(player.auth || "");
-      setRoom((player.room || 1).toString());
+      setConn(player.conn || "")
+      setIpv4(player.ipv4 || "")
+      setAuth(player.auth || "")
+      setRoom((player.room || 1).toString())
     }
-  }, [player]);
+  }, [player])
 
   const handleBan = async () => {
     if (!player || !reason.trim()) return
@@ -59,7 +58,7 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
           conn: conn.trim(),
           ipv4: ipv4.trim(),
           auth: auth.trim(),
-          room: Number.parseInt(room) || 1,
+          room: parseInt(room) || 1, // Usando parseInt aqui para garantir que é um número
         }),
       })
 
@@ -88,8 +87,8 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
             Banir Player
           </DialogTitle>
           <DialogDescription>
-            Você está prestes a banir o player <strong>{player?.name}</strong>. Esta ação pode ser revertida
-            posteriormente.
+            Você está prestes a banir o player <strong>{player?.name}</strong>. Esta
+            ação pode ser revertida posteriormente.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -121,11 +120,25 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
                 placeholder="Token de autenticação"
                 value={auth}
                 onChange={(e) => setAuth(e.target.value)}
+                type="password" 
+                readOnly       
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="room">Sala</Label>
-              <Input id="room" type="number" placeholder="1" value={room} onChange={(e) => setRoom(e.target.value)} />
+              <Input
+                id="room"
+                type="number"
+                placeholder="0"
+                value={room}
+                min="0" 
+                onChange={(e) => {
+                  if (e.target.value === "" || parseInt(e.target.value) >= 0) {
+                    setRoom(e.target.value)
+                  }
+                }}
+
+              />
             </div>
           </div>
         </div>
