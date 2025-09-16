@@ -8,9 +8,8 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Haxball Admin Panel",
-  description: "Sistema de moderação para Haxball",
-  generator: "v0.app",
+  title: "Bore Admin Panel",
+  description: "Sistema de moderação para Bore",
 }
 
 export default function RootLayout({

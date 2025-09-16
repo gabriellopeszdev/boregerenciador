@@ -30,15 +30,16 @@ export interface Ban {
 }
 
 export interface Mute {
-  id: number
-  name: string
-  time: string
-  reason: string
-  muted_by: string
-  conn: string
-  ipv4: string
-  auth: string
-  room: number
+  id: number;
+  name: string;
+  time: string;
+  reason: string;
+  muted_by: string;
+  active: boolean;
+  conn: string;
+  ipv4: string;
+  auth: string;
+  room: number;
 }
 
 export type UserRole = "ceo" | "diretor" | "admin" | "gerente" | "mod"

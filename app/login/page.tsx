@@ -53,7 +53,7 @@ export default function LoginPage() {
       >
         <Card className="shadow-2xl border-border/50">
           <CardHeader className="text-center space-y-4 pb-8">
-            <CardTitle className="text-3xl font-bold tracking-tight">Haxball Admin</CardTitle>
+            <CardTitle className="text-3xl font-bold tracking-tight">Bore Admin</CardTitle>
             <CardDescription className="text-base text-muted-foreground">
               Faça login para acessar o painel de moderação
             </CardDescription>

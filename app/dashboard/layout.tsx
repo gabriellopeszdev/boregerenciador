@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center gap-2">
               <Shield className="h-8 w-8 text-sidebar-accent" />
               <div>
-                <h1 className="text-xl font-bold text-sidebar-foreground">Haxball Admin</h1>
+                <h1 className="text-xl font-bold text-sidebar-foreground">Bore Admin</h1>
                 <p className="text-sm text-sidebar-foreground/70">
                   {session.user?.name} ({session.user?.role})
                 </p>

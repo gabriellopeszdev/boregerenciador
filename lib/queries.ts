@@ -7,15 +7,17 @@ export async function getPlayerByName(name: string): Promise<Player | null> {
 }
 
 export async function getAllPlayers(): Promise<Player[]> {
-  return executeQuery<Player>("SELECT * FROM players ORDER BY name ASC", [null]); 
+  return executeQuery<Player>("SELECT * FROM players ORDER BY name ASC", [null]);
 }
 
 export async function getBans(): Promise<Ban[]> {
-  return executeQuery<Ban>("SELECT * FROM bans ORDER BY time DESC")
+  // Adicione um array vazio para o parâmetro
+  return executeQuery<Ban>("SELECT * FROM bans ORDER BY time DESC", []);
 }
 
 export async function getMutes(): Promise<Mute[]> {
-  return executeQuery<Mute>("SELECT * FROM mutes ORDER BY time DESC")
+  // Adicione um array vazio para o parâmetro
+  return executeQuery<Mute>("SELECT * FROM mutes ORDER BY time DESC", []);
 }
 
 export async function banPlayer(
@@ -71,7 +73,7 @@ export async function getPlayersPaginated(
     query += " WHERE name LIKE ?";
     params.push(`%${searchTerm}%`);
   }
-  
+
   // Ajuste: Concatena LIMIT e OFFSET diretamente na query para contornar o erro do driver
   query += ` ORDER BY name ASC LIMIT ${limit} OFFSET ${offset}`;
 

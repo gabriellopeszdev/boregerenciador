@@ -1,51 +1,63 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { Mute } from "@/lib/types"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { motion } from "framer-motion"
-import { Search, Volume2, Clock, MoreVertical } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState } from "react";
+import type { Mute } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { motion } from "framer-motion";
+import { Search, Volume2, Clock, MoreVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface MutesTableProps {
-  mutes: Mute[]
+  mutes: Mute[];
 }
 
 export function MutesTable({ mutes }: MutesTableProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [loading, setLoading] = useState<number | null>(null)
-  const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState<number | null>(null);
+  const router = useRouter();
 
   const filteredMutes = mutes.filter(
     (mute) =>
-      (mute as any).player_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (mute as any).name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mute.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (mute as any).muted_by_name?.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      (mute as any).name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleUnmute = async (muteId: number) => {
-    setLoading(muteId)
+    setLoading(muteId);
     try {
       const response = await fetch(`/api/mutes/${muteId}/unmute`, {
         method: "POST",
-      })
+      });
 
       if (response.ok) {
-        router.refresh()
+        router.refresh();
       }
     } catch (error) {
-      console.error("Error unmuting player:", error)
+      console.error("Error unmuting player:", error);
     } finally {
-      setLoading(null)
+      setLoading(null);
     }
-  }
+  };
 
   return (
     <Card>
@@ -89,14 +101,20 @@ export function MutesTable({ mutes }: MutesTableProps) {
                   className="hover:bg-muted/50"
                 >
                   <TableCell className="font-medium">
-                    {(mute as any).player_name || `Player #${mute.player_id}`}
+                    {(mute as any).name || `Player #${mute.id}`}
                   </TableCell>
-                  <TableCell className="max-w-xs truncate">{mute.reason}</TableCell>
-                  <TableCell>{(mute as any).muted_by_name || `User #${mute.muted_by}`}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {mute.reason}
+                  </TableCell>
+                  <TableCell>
+                    {(mute as any).muted_by_name || `User #${mute.muted_by}`}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
-                      {format(new Date(mute.mute_date), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                      {format(new Date(mute.time), "dd/MM/yyyy HH:mm", {
+                        locale: ptBR,
+                      })}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -108,18 +126,16 @@ export function MutesTable({ mutes }: MutesTableProps) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {mute.active && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleUnmute(mute.id)}
-                        disabled={loading === mute.id}
-                        className="gap-1"
-                      >
-                        <Volume2 className="h-3 w-3" />
-                        {loading === mute.id ? "Desmutando..." : "Desmutar"}
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleUnmute(mute.id)}
+                      disabled={loading === mute.id}
+                      className="gap-1"
+                    >
+                      <Volume2 className="h-3 w-3" />
+                      {loading === mute.id ? "Desmutando..." : "Desmutar"}
+                    </Button>
                   </TableCell>
                 </motion.tr>
               ))}
@@ -139,9 +155,12 @@ export function MutesTable({ mutes }: MutesTableProps) {
               <Card className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <div className="font-medium mb-1">{(mute as any).player_name || `Player #${mute.player_id}`}</div>
+                    <div className="font-medium mb-1">
+                      {(mute as any).name || `Player #${mute.player_id}`}
+                    </div>
                     <div className="text-sm text-muted-foreground">
-                      Mutado por: {(mute as any).muted_by_name || `User #${mute.muted_by}`}
+                      Mutado por:{" "}
+                      {(mute as any).muted_by_name || `User #${mute.muted_by}`}
                     </div>
                   </div>
                   {mute.active && (
@@ -152,7 +171,10 @@ export function MutesTable({ mutes }: MutesTableProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleUnmute(mute.id)} disabled={loading === mute.id}>
+                        <DropdownMenuItem
+                          onClick={() => handleUnmute(mute.id)}
+                          disabled={loading === mute.id}
+                        >
                           <Volume2 className="h-4 w-4 mr-2" />
                           {loading === mute.id ? "Desmutando..." : "Desmutar"}
                         </DropdownMenuItem>
@@ -166,9 +188,14 @@ export function MutesTable({ mutes }: MutesTableProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    {format(new Date(mute.mute_date), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                    {format(new Date(mute.time), "dd/MM/yyyy HH:mm", {
+                      locale: ptBR,
+                    })}
                   </div>
-                  <Badge variant={mute.active ? "default" : "secondary"} className={mute.active ? "bg-orange-600" : ""}>
+                  <Badge
+                    variant={mute.active ? "default" : "secondary"}
+                    className={mute.active ? "bg-orange-600" : ""}
+                  >
                     {mute.active ? "Ativo" : "Inativo"}
                   </Badge>
                 </div>
@@ -178,9 +205,11 @@ export function MutesTable({ mutes }: MutesTableProps) {
         </div>
 
         {filteredMutes.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">Nenhum mute encontrado</div>
+          <div className="text-center py-8 text-muted-foreground">
+            Nenhum mute encontrado
+          </div>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

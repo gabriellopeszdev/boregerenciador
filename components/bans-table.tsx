@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { motion } from "framer-motion"
 import { Search, Trash2, Clock, MoreVertical } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
