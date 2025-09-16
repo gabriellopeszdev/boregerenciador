@@ -156,7 +156,7 @@ export function MutesTable({ mutes }: MutesTableProps) {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="font-medium mb-1">
-                      {(mute as any).name || `Player #${mute.player_id}`}
+                      {(mute as any).name || `Player #${mute.id}`}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Mutado por:{" "}
