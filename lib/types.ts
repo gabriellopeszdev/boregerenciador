@@ -1,3 +1,5 @@
+import { DefaultSession } from "next-auth"
+
 export interface Player {
   room: number
   auth: string
@@ -41,6 +43,26 @@ export interface Mute {
   auth: string;
   room: number;
 }
+
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string | null      // ID do jogador no seu DB
+      role?: string | null
+      rooms?: number[] | null 
+    } & DefaultSession["user"] // Mantém name, email, image do Discord
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string | null // ID do jogador no seu DB
+    role?: string | null
+    rooms?: number[] | null 
+  }
+}
+
 
 export type UserRole = "ceo" | "diretor" | "admin" | "gerente" | "mod"
 
