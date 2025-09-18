@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useSession, signOut } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -44,14 +43,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button variant="outline" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </Button>
-      </div>
-
+    <div className="min-h-screen bg-background lg:flex">
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -59,7 +51,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           x: sidebarOpen ? 0 : "-100%",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border lg:translate-x-0 lg:static lg:inset-0`}
+        className="fixed inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border lg:translate-x-0 lg:flex-shrink-0"
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -113,9 +105,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </motion.aside>
 
+      {/* Mobile menu button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button variant="outline" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+          {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        </Button>
+      </div>
+
       {/* Main content */}
-      <main className="lg:ml-64 min-h-screen">
-        <div className="p-6 pt-16 lg:pt-6">{children}</div>
+      <main className="flex-1 min-w-0">
+        <div className="p-6 pt-20 lg:pt-4">{children}</div>
       </main>
 
       {/* Mobile overlay */}

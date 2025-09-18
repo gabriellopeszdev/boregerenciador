@@ -10,7 +10,7 @@ export async function getAllPlayers(): Promise<Player[]> {
   return executeQuery<Player>("SELECT * FROM players ORDER BY name ASC", [null]);
 }
 
-export async function getBans(): Promise<Ban[]> {
+export async function getBans(p0: boolean): Promise<Ban[]> {
   // Adicione um array vazio para o parâmetro
   return executeQuery<Ban>("SELECT * FROM bans ORDER BY time DESC", []);
 }
