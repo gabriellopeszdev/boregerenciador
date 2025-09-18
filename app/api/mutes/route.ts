@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerAuthSession } from "@/lib/auth"
 import { mutePlayer, getMutes } from "@/lib/queries"
-import { getPlayerByName } from "@/lib/queries"
 
 export async function GET() {
   try {
@@ -21,7 +20,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerAuthSession()
-    if (!session) {
+    // Adicionamos uma verificação extra para garantir que session.user.name existe
+    if (!session || !session.user?.name) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -31,13 +31,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Get current user data
-    const currentUser = await getPlayerByName(session.user.name!)
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
-    }
+    const staffDiscordName = session.user.name;
 
-    await mutePlayer(name, currentUser.name, reason, conn || "", ipv4 || "", auth || "", room || 1)
+    await mutePlayer(name, staffDiscordName, reason, conn || "", ipv4 || "", auth || "", room || 1)
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error muting player:", error)

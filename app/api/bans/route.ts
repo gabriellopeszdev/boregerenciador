@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerAuthSession } from "@/lib/auth"
 import { banPlayer, getBans } from "@/lib/queries"
-import { getPlayerByName } from "@/lib/queries"
 
 export async function GET() {
   try {
@@ -21,7 +20,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerAuthSession()
-    if (!session) {
+    // Verificação de segurança para garantir que o nome do usuário existe na sessão
+    if (!session || !session.user?.name) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -31,21 +31,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Get current user data
-    const currentUser = await getPlayerByName(session.user.name!)
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
-    }
+    // Usando o nome do Discord diretamente da sessão
+    const staffDiscordName = session.user.name;
 
     await banPlayer(
-      name, 
-      currentUser.name, 
-      reason, 
-      conn || "", 
-      ipv4 || "", 
-      auth || "", 
+      name,
+      staffDiscordName,
+      reason,
+      conn || "",
+      ipv4 || "",
+      auth || "",
       room || 1
     )
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error banning player:", error)
