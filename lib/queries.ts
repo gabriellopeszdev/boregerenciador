@@ -1,5 +1,3 @@
-// Local do arquivo: /lib/queries.ts
-
 import { executeQuery } from "./database"
 import type { Player, Ban, Mute } from "./types"
 
@@ -28,11 +26,12 @@ export async function banPlayer(
   conn: string,
   ipv4: string,
   auth: string,
-  room = 1,
+  time: Date,
+  room = 0,
 ): Promise<void> {
   await executeQuery(
-    "INSERT INTO bans (name, time, reason, banned_by, conn, ipv4, auth, room) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?)",
-    [name, reason, bannedBy, conn, ipv4, auth, room],
+    "INSERT INTO bans (name, time, reason, banned_by, conn, ipv4, auth, room) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [name, time, reason, bannedBy, conn, ipv4, auth, room],
   )
 }
 
@@ -47,11 +46,12 @@ export async function mutePlayer(
   conn: string,
   ipv4: string,
   auth: string,
-  room = 1,
+  time: Date,
+  room = 0,
 ): Promise<void> {
   await executeQuery(
-    "INSERT INTO mutes (name, time, reason, muted_by, conn, ipv4, auth, room) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?)",
-    [name, reason, mutedBy, conn, ipv4, auth, room],
+    "INSERT INTO mutes (name, time, reason, muted_by, conn, ipv4, auth, room) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [name, time, reason, mutedBy, conn, ipv4, auth, room],
   )
 }
 

@@ -24,28 +24,35 @@ interface MutePlayerDialogProps {
   currentUser: any
 }
 
-export function MutePlayerDialog({ player, open, onOpenChange, currentUser }: MutePlayerDialogProps) {
+const getLocalDateTimeString = (date: Date = new Date()) => {
+  const offset = date.getTimezoneOffset()
+  const localDate = new Date(date.getTime() - (offset * 60 * 1000))
+  return localDate.toISOString().slice(0, 16)
+}
+
+export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialogProps) {
   const [reason, setReason] = useState("")
+  const [muteTime, setMuteTime] = useState(getLocalDateTimeString())
   const [conn, setConn] = useState("")
   const [ipv4, setIpv4] = useState("")
   const [auth, setAuth] = useState("")
-  // highlight-next-line
-  const [room, setRoom] = useState("0") // Alterado para iniciar com "0"
+  const [room, setRoom] = useState("0")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    if (player) {
+    if (open && player) {
       setConn(player.conn || "")
       setIpv4(player.ipv4 || "")
       setAuth(player.auth || "")
-      // highlight-next-line
-      setRoom((player.room ?? 0).toString()) // Alterado para tratar o caso de a sala ser 0
+      setRoom((player.room ?? 0).toString())
+      setReason("")
+      setMuteTime(getLocalDateTimeString())
     }
-  }, [player])
+  }, [open, player])
 
   const handleMute = async () => {
-    if (!player || !reason.trim()) return
+    if (!player || !reason.trim() || !muteTime) return
 
     setLoading(true)
     try {
@@ -57,22 +64,16 @@ export function MutePlayerDialog({ player, open, onOpenChange, currentUser }: Mu
         body: JSON.stringify({
           name: player.name,
           reason: reason.trim(),
+          time: muteTime,
           conn: conn.trim(),
           ipv4: ipv4.trim(),
           auth: auth.trim(),
-          // highlight-next-line
-          room: parseInt(room) ?? 0, // Alterado para tratar o caso de a sala ser 0
+          room: parseInt(room) ?? 0,
         }),
       })
 
       if (response.ok) {
         onOpenChange(false)
-        setReason("")
-        setConn("")
-        setIpv4("")
-        setAuth("")
-        // highlight-next-line
-        setRoom("0") // Alterado para resetar para "0"
         router.refresh()
       }
     } catch (error) {
@@ -95,7 +96,7 @@ export function MutePlayerDialog({ player, open, onOpenChange, currentUser }: Mu
             ação pode ser revertida posteriormente.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="reason">Motivo do mute</Label>
             <Textarea
@@ -106,6 +107,17 @@ export function MutePlayerDialog({ player, open, onOpenChange, currentUser }: Mu
               rows={3}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="muteTime">Data e Hora do Mute</Label>
+            <Input
+              id="muteTime"
+              type="datetime-local"
+              value={muteTime}
+              onChange={(e) => setMuteTime(e.target.value)}
+            />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="conn">Conexão</Label>
@@ -119,28 +131,21 @@ export function MutePlayerDialog({ player, open, onOpenChange, currentUser }: Mu
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="auth">Auth</Label>
-              <Input
-                id="auth"
-                value={auth}
-                readOnly
-
-                type="password" 
-              />
+              <Input id="auth" value={auth} readOnly type="password" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="room">Sala</Label>
-               <Input
+              <Input
                 id="room"
                 type="number"
                 placeholder="0"
                 value={room}
-                min="0" 
+                min="0"
                 onChange={(e) => {
                   if (e.target.value === "" || parseInt(e.target.value) >= 0) {
                     setRoom(e.target.value)
                   }
                 }}
-
               />
             </div>
           </div>
@@ -151,7 +156,7 @@ export function MutePlayerDialog({ player, open, onOpenChange, currentUser }: Mu
           </Button>
           <Button
             onClick={handleMute}
-            disabled={loading || !reason.trim()}
+            disabled={loading || !reason.trim() || !muteTime}
             className="bg-orange-600 hover:bg-orange-700 text-white"
           >
             {loading ? "Mutando..." : "Mutar Player"}

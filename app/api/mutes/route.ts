@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerAuthSession } from "@/lib/auth"
 import { mutePlayer, getMutes } from "@/lib/queries"
+import { time } from "console"
 
 export async function GET() {
   try {
@@ -20,21 +21,34 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerAuthSession()
-    // Adicionamos uma verificação extra para garantir que session.user.name existe
     if (!session || !session.user?.name) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { name, reason, conn, ipv4, auth, room } = await request.json()
+    const { name, time, reason, conn, ipv4, auth, room } = await request.json()
 
-    if (!name || !reason) {
+    if (!name || !reason || !time) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const muteDate = new Date(time);
+    if (isNaN(muteDate.getTime())) {
+      return NextResponse.json({ error: "Invalid time format" }, { status: 400 });
     }
 
     const staffDiscordName = session.user.name;
 
-    await mutePlayer(name, staffDiscordName, reason, conn || "", ipv4 || "", auth || "", room || 1)
-    
+    await mutePlayer(
+      name,            
+      staffDiscordName,   
+      reason,          
+      conn || "",      
+      ipv4 || "",      
+      auth || "",       
+      muteDate,         
+      room || 1         
+    )
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error muting player:", error)

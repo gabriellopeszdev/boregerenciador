@@ -20,18 +20,21 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerAuthSession()
-    // Verificação de segurança para garantir que o nome do usuário existe na sessão
     if (!session || !session.user?.name) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { name, reason, conn, ipv4, auth, room } = await request.json()
+    const { name, time, reason, conn, ipv4, auth, room } = await request.json()
 
-    if (!name || !reason) {
+    if (!name || !reason || !time) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Usando o nome do Discord diretamente da sessão
+    const banDate = new Date(time);
+    if (isNaN(banDate.getTime())) {
+        return NextResponse.json({ error: "Invalid time format" }, { status: 400 });
+    }
+
     const staffDiscordName = session.user.name;
 
     await banPlayer(
@@ -41,7 +44,8 @@ export async function POST(request: NextRequest) {
       conn || "",
       ipv4 || "",
       auth || "",
-      room || 1
+      banDate,
+      room || 0,
     )
     
     return NextResponse.json({ success: true })

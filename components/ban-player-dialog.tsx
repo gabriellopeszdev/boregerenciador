@@ -21,7 +21,13 @@ interface BanPlayerDialogProps {
   player: Player | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentUser: any // Você pode querer tipar isso melhor depois
+  currentUser: any
+}
+
+const getLocalDateTimeString = (date: Date = new Date()) => {
+  const offset = date.getTimezoneOffset()
+  const localDate = new Date(date.getTime() - (offset * 60 * 1000))
+  return localDate.toISOString().slice(0, 16)
 }
 
 export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: BanPlayerDialogProps) {
@@ -29,7 +35,8 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
   const [conn, setConn] = useState("")
   const [ipv4, setIpv4] = useState("")
   const [auth, setAuth] = useState("")
-  const [room, setRoom] = useState("1")
+  const [room, setRoom] = useState("0")
+  const [banTime, setBanTime] = useState(getLocalDateTimeString())
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -40,6 +47,8 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
       setAuth(player.auth || "")
       setRoom((player.room || 1).toString())
     }
+    setBanTime(getLocalDateTimeString())
+    setReason("")
   }, [player])
 
   const handleBan = async () => {
@@ -58,7 +67,8 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
           conn: conn.trim(),
           ipv4: ipv4.trim(),
           auth: auth.trim(),
-          room: parseInt(room) || 1, // Usando parseInt aqui para garantir que é um número
+          room: parseInt(room) || 0,
+          time: banTime,
         }),
       })
 
@@ -92,6 +102,7 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+
           <div className="space-y-2">
             <Label htmlFor="reason">Motivo do ban</Label>
             <Textarea
@@ -100,6 +111,15 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="banTime">Data e Hora do Ban</Label>
+            <Input
+              id="banTime"
+              type="datetime-local"
+              value={banTime}
+              onChange={(e) => setBanTime(e.target.value)}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -120,8 +140,8 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
                 placeholder="Token de autenticação"
                 value={auth}
                 onChange={(e) => setAuth(e.target.value)}
-                type="password" 
-                readOnly       
+                type="password"
+                readOnly
               />
             </div>
             <div className="space-y-2">
@@ -131,7 +151,7 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
                 type="number"
                 placeholder="0"
                 value={room}
-                min="0" 
+                min="0"
                 onChange={(e) => {
                   if (e.target.value === "" || parseInt(e.target.value) >= 0) {
                     setRoom(e.target.value)
