@@ -8,7 +8,7 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Bore Admin Panel",
+  title: "Bore Admin Painel",
   description: "Sistema de moderação para Bore",
 }
 
