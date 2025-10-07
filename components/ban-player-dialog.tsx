@@ -45,7 +45,7 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
       setConn(player.conn || "")
       setIpv4(player.ipv4 || "")
       setAuth(player.auth || "")
-      setRoom((player.room || 1).toString())
+      setRoom((player.room || 0).toString())
     }
     setBanTime(getLocalDateTimeString())
     setReason("")
