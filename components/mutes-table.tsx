@@ -163,7 +163,6 @@ export function MutesTable({ mutes }: MutesTableProps) {
                       {(mute as any).muted_by || `User #${mute.muted_by}`}
                     </div>
                   </div>
-                  {mute.active && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild> 
                         <Button variant="ghost" size="sm">
@@ -180,7 +179,6 @@ export function MutesTable({ mutes }: MutesTableProps) {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  )}
                 </div>
                 <div className="text-sm mb-3 p-2 bg-muted rounded">
                   <strong>Motivo:</strong> {mute.reason}
