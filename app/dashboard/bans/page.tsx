@@ -1,5 +1,4 @@
 import { getServerAuthSession } from "@/lib/auth"
-import { getBans } from "@/lib/queries"
 import { redirect } from "next/navigation"
 import { BansTable } from "@/components/bans-table"
 
@@ -10,8 +9,6 @@ export default async function BansPage() {
     redirect("/login")
   }
 
-  const bans = await getBans(true) // Include inactive bans
-
   return (
     <div className="space-y-6">
       <div>
@@ -19,7 +16,7 @@ export default async function BansPage() {
         <p className="text-muted-foreground">Visualize e gerencie todos os bans do servidor</p>
       </div>
 
-      <BansTable bans={bans} />
+      <BansTable />
     </div>
   )
 }

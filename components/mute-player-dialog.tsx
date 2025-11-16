@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { VolumeX } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface MutePlayerDialogProps {
   player: Player | null
@@ -39,6 +40,7 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
   const [room, setRoom] = useState("0")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (open && player) {
@@ -54,6 +56,7 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
   const handleMute = async () => {
     if (!player || !reason.trim() || !muteTime) return
 
+    console.log(`[mute-dialog] Mutando jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch("/api/mutes", {
@@ -73,11 +76,30 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
       })
 
       if (response.ok) {
-        onOpenChange(false)
-        router.refresh()
+        console.log(`[mute-dialog] Mute criado com sucesso para ${player.name}`)
+        toast({
+          title: "✅ Sucesso!",
+          description: `${player.name} foi mutado com sucesso.`,
+        })
+        setTimeout(() => {
+          onOpenChange(false)
+          router.refresh()
+        }, 1500)
+      } else {
+        console.warn(`[mute-dialog] Falha ao mutar ${player.name}: ${response.status}`)
+        toast({
+          title: "❌ Erro!",
+          description: `Falha ao mutar ${player.name}. Tente novamente.`,
+          variant: "destructive",
+        })
       }
     } catch (error) {
-      console.error("Error muting player:", error)
+      console.error(`[mute-dialog] Erro ao mutar ${player.name}:`, error)
+      toast({
+        title: "❌ Erro!",
+        description: `Erro ao tentar mutar ${player.name}.`,
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }

@@ -10,13 +10,75 @@ export async function getAllPlayers(): Promise<Player[]> {
   return executeQuery<Player>("SELECT * FROM players ORDER BY name ASC", []);
 }
 
-// Ajuste: Removido o parâmetro "p0: boolean" que não estava sendo utilizado.
-export async function getBans(): Promise<Ban[]> { 
-  return executeQuery<Ban>("SELECT * FROM bans ORDER BY time DESC", []);
+
+export async function getBans(p0?: boolean): Promise<Ban[]> { 
+  return executeQuery<Ban>("SELECT * FROM bans ORDER BY time DESC", []);
 }
 
-export async function getMutes(): Promise<Mute[]> {
+export async function getBansPaginated(
+  page: number,
+  limit: number,
+  searchTerm: string = ""
+): Promise<Ban[]> {
+  const offset = (page - 1) * limit;
+  let query = "SELECT * FROM bans";
+  const params = [];
+
+  if (searchTerm) {
+    query += " WHERE name LIKE ?";
+    params.push(`%${searchTerm}%`);
+  }
+
+  query += ` ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+
+  return executeQuery<Ban>(query, params);
+}
+
+export async function getBanCount(searchTerm: string = ""): Promise<number> {
+  let query = "SELECT COUNT(*) as count FROM bans";
+  const params = [];
+
+  if (searchTerm) {
+    query += " WHERE name LIKE ?";
+    params.push(`%${searchTerm}%`);
+  }
+
+  const result = await executeQuery<{ count: number }>(query, params);
+  return result[0].count;
+}export async function getMutes(): Promise<Mute[]> {
   return executeQuery<Mute>("SELECT * FROM mutes ORDER BY time DESC", []);
+}
+
+export async function getMutesPaginated(
+  page: number,
+  limit: number,
+  searchTerm: string = ""
+): Promise<Mute[]> {
+  const offset = (page - 1) * limit;
+  let query = "SELECT * FROM mutes";
+  const params = [];
+
+  if (searchTerm) {
+    query += " WHERE name LIKE ?";
+    params.push(`%${searchTerm}%`);
+  }
+
+  query += ` ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+
+  return executeQuery<Mute>(query, params);
+}
+
+export async function getMuteCount(searchTerm: string = ""): Promise<number> {
+  let query = "SELECT COUNT(*) as count FROM mutes";
+  const params = [];
+
+  if (searchTerm) {
+    query += " WHERE name LIKE ?";
+    params.push(`%${searchTerm}%`);
+  }
+
+  const result = await executeQuery<{ count: number }>(query, params);
+  return result[0].count;
 }
 
 export async function banPlayer(

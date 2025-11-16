@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Ban } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface BanPlayerDialogProps {
   player: Player | null
@@ -39,6 +40,7 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
   const [banTime, setBanTime] = useState(getLocalDateTimeString())
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (player) {
@@ -54,6 +56,7 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
   const handleBan = async () => {
     if (!player || !reason.trim()) return
 
+    console.log(`[ban-dialog] Banindo jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch("/api/bans", {
@@ -73,16 +76,35 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
       })
 
       if (response.ok) {
-        onOpenChange(false)
-        setReason("")
-        setConn("")
-        setIpv4("")
-        setAuth("")
-        setRoom("1")
-        router.refresh()
+        console.log(`[ban-dialog] Ban criado com sucesso para ${player.name}`)
+        toast({
+          title: "✅ Sucesso!",
+          description: `${player.name} foi banido com sucesso.`,
+        })
+        setTimeout(() => {
+          onOpenChange(false)
+          setReason("")
+          setConn("")
+          setIpv4("")
+          setAuth("")
+          setRoom("1")
+          router.refresh()
+        }, 1500)
+      } else {
+        console.warn(`[ban-dialog] Falha ao banir ${player.name}: ${response.status}`)
+        toast({
+          title: "❌ Erro!",
+          description: `Falha ao banir ${player.name}. Tente novamente.`,
+          variant: "destructive",
+        })
       }
     } catch (error) {
-      console.error("Error banning player:", error)
+      console.error(`[ban-dialog] Erro ao banir ${player.name}:`, error)
+      toast({
+        title: "❌ Erro!",
+        description: `Erro ao tentar banir ${player.name}.`,
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
