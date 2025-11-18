@@ -1,0 +1,213 @@
+"use client"
+
+import { useState } from "react"
+import type { Player } from "@/lib/types"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Crown } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+
+interface LegendPlayerDialogProps {
+  player: Player | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
+}
+
+export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: LegendPlayerDialogProps) {
+  const [rooms, setRooms] = useState<string>("1")
+  const [expirationDate, setExpirationDate] = useState<string>("")
+  const [vipLevel, setVipLevel] = useState<number>(4)
+  const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
+
+  const handleAddLegend = async () => {
+    if (!player || !expirationDate) return
+
+    console.log(`[legend-dialog] Adicionando legend ao jogador ${player.name}`)
+    setLoading(true)
+    try {
+      const roomsArray = rooms.split(",").map(r => Number.parseInt(r.trim())).filter(r => !isNaN(r))
+      
+      const response = await fetch(`/api/players/${player.id}/legend`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "add",
+          vipLevel,
+          rooms: roomsArray,
+          expirationDate,
+        }),
+      })
+
+      if (response.ok) {
+        console.log(`[legend-dialog] Legend adicionado com sucesso para ${player.name}`)
+        toast({
+          title: "✅ Sucesso!",
+          description: `${player.name} agora tem vip=${vipLevel} até ${expirationDate}.`,
+        })
+        setTimeout(() => {
+          onOpenChange(false)
+          setRooms("1")
+          setExpirationDate("")
+          onSuccess?.()
+        }, 1500)
+      } else {
+        const data = await response.json()
+        console.warn(`[legend-dialog] Falha: ${response.status}`, data.error)
+        toast({
+          title: "❌ Erro!",
+          description: data.error || "Falha ao adicionar legend.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("[legend-dialog] Erro:", error)
+      toast({
+        title: "❌ Erro!",
+        description: "Erro ao tentar adicionar legend.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRemoveLegend = async () => {
+    if (!player) return
+
+    console.log(`[legend-dialog] Removendo legend do jogador ${player.name}`)
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/players/${player.id}/legend`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "remove",
+        }),
+      })
+
+      if (response.ok) {
+        console.log(`[legend-dialog] Legend removido com sucesso de ${player.name}`)
+        toast({
+          title: "✅ Sucesso!",
+          description: `Legend removido de ${player.name}.`,
+        })
+        setTimeout(() => {
+          onOpenChange(false)
+          setRooms("1")
+          setExpirationDate("")
+          onSuccess?.()
+        }, 1500)
+      } else {
+        const data = await response.json()
+        console.warn(`[legend-dialog] Falha: ${response.status}`, data.error)
+        toast({
+          title: "❌ Erro!",
+          description: data.error || "Falha ao remover legend.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("[legend-dialog] Erro:", error)
+      toast({
+        title: "❌ Erro!",
+        description: "Erro ao tentar remover legend.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Crown className="h-5 w-5 text-yellow-500" />
+            Gerenciar Legend
+          </DialogTitle>
+          <DialogDescription>
+            Você está gerenciando o status de legend do player <strong>{player?.name}</strong>
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="rooms">Salas (separadas por vírgula)</Label>
+            <Input
+              id="rooms"
+              placeholder="1,2,3"
+              value={rooms}
+              onChange={(e) => setRooms(e.target.value)}
+              disabled={loading}
+            />
+            <p className="text-xs text-muted-foreground">Ex: 1,2,3 para salas 1, 2 e 3</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="expiration">Data de Expiração</Label>
+            <Input
+              id="expiration"
+              type="datetime-local"
+              value={expirationDate}
+              onChange={(e) => setExpirationDate(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="vipLevel">Tipo</Label>
+            <select
+              id="vipLevel"
+              value={vipLevel}
+              onChange={(e) => setVipLevel(Number(e.target.value))}
+              className="w-full rounded border bg-background p-2"
+              disabled={loading}
+            >
+              <option value={3}>VIP (3)</option>
+              <option value={4}>Legend (4)</option>
+            </select>
+          </div>
+
+          {player?.vip === 4 && (
+            <div className="p-2 bg-yellow-500/10 border border-yellow-500/30 rounded text-sm">
+              <strong>Status atual:</strong> Legend ativo
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleRemoveLegend}
+            disabled={loading}
+          >
+            {loading ? "Processando..." : "Remover Legend"}
+          </Button>
+          <Button
+            type="button"
+            onClick={handleAddLegend}
+            disabled={loading || !expirationDate}
+          >
+            {loading ? "Adicionando..." : "Adicionar Legend"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

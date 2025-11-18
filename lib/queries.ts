@@ -6,6 +6,11 @@ export async function getPlayerByName(name: string): Promise<Player | null> {
   return players[0] || null
 }
 
+export async function getPlayerById(id: number): Promise<Player | null> {
+  const players = await executeQuery<Player>("SELECT * FROM players WHERE id = ? LIMIT 1", [id])
+  return players[0] || null
+}
+
 export async function getAllPlayers(): Promise<Player[]> {
   return executeQuery<Player>("SELECT * FROM players ORDER BY name ASC", []);
 }
@@ -119,6 +124,41 @@ export async function mutePlayer(
 
 export async function unmutePlayer(muteId: number): Promise<void> {
   await executeQuery("DELETE FROM mutes WHERE id = ?", [muteId])
+}
+
+export async function setPlayerLegend(playerId: number, vipLevel: number, expirationDate: string): Promise<void> {
+  // vipLevel: 3 => VIP, 4 => LEGEND
+  await executeQuery(
+    "UPDATE players SET vip = ?, expired_vip = ? WHERE id = ?",
+    [vipLevel, expirationDate, playerId]
+  )
+}
+
+export async function removePlayerLegend(playerId: number): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET vip = 0, expired_vip = NULL WHERE id = ?",
+    [playerId]
+  )
+}
+
+export async function setPlayerMod(playerId: number, rooms: number[]): Promise<void> {
+  const roomsJson = JSON.stringify(rooms)
+  await executeQuery(
+    "UPDATE players SET `mod` = ? WHERE id = ?",
+    [roomsJson, playerId]
+  )
+}
+
+export async function removePlayerMod(playerId: number): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET `mod` = NULL WHERE id = ?",
+    [playerId]
+  )
+}
+
+export async function resetAllVip(): Promise<void> {
+  // Reseta vip e expired_vip para todos os players
+  await executeQuery("UPDATE players SET vip = 0, expired_vip = NULL", [])
 }
 
 export async function getPlayersPaginated(

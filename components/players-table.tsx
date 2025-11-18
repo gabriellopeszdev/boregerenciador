@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { motion } from "framer-motion"
-import { Search, Ban, VolumeX, Crown, Shield, Star, Briefcase, Gavel, MoreVertical, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Search, Ban, VolumeX, Crown, Shield, Star, Briefcase, Gavel, MoreVertical, ChevronLeft, ChevronRight, Loader2, Zap } from "lucide-react"
 import { BanPlayerDialog } from "./ban-player-dialog"
 import { MutePlayerDialog } from "./mute-player-dialog"
+import { LegendPlayerDialog } from "./legend-player-dialog"
+import { ModPlayerDialog } from "./mod-player-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 const API_URL = "/api/players";
@@ -29,6 +31,9 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
+  const [legendDialogOpen, setLegendDialogOpen] = useState(false);
+  const [modDialogOpen, setModDialogOpen] = useState(false);
+  const [canManageRoles, setCanManageRoles] = useState(false);
 
   useEffect(() => {
     async function fetchPlayers() {
@@ -51,38 +56,42 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
     fetchPlayers();
   }, [currentPage, searchTerm]);
 
+  useEffect(() => {
+    if (currentUser) {
+      const hasPermission = 
+        currentUser.ceo === 1 || 
+        (currentUser.diretor && currentUser.diretor > 0) ||
+        (currentUser.gerente && currentUser.gerente?.length > 0)
+      setCanManageRoles(hasPermission)
+    }
+  }, [currentUser])
+
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE);
 
 const getRoleIcon = (player: Player) => {
   if (player.ceo === 1) return <Crown className="h-4 w-4 text-yellow-500" />
   if (player.diretor === 1) return <Shield className="h-4 w-4 text-purple-500" />
-  // highlight-start
   if (player.admin && player.admin.length > 0) return <Star className="h-4 w-4 text-blue-500" />
   if (player.gerente && player.gerente.length > 0) return <Briefcase className="h-4 w-4 text-green-500" />
   if (player.mod && player.mod.length > 0) return <Gavel className="h-4 w-4 text-orange-500" />
-  // highlight-end
   return null
 }
 
 const getRoleName = (player: Player) => {
   if (player.ceo === 1) return "CEO"
   if (player.diretor === 1) return "Diretor"
-  // highlight-start
   if (player.admin && player.admin.length > 0) return "Admin"
   if (player.gerente && player.gerente.length > 0) return "Gerente"
   if (player.mod && player.mod.length > 0) return "Moderador"
-  // highlight-end
   return "Player"
 }
 
 const getRoleColor = (player: Player) => {
   if (player.ceo === 1) return "bg-yellow-500/20 text-yellow-300"
   if (player.diretor === 1) return "bg-purple-500/20 text-purple-300"
-  // highlight-start
   if (player.admin && player.admin.length > 0) return "bg-blue-500/20 text-blue-300"
   if (player.gerente && player.gerente.length > 0) return "bg-green-500/20 text-green-300"
   if (player.mod && player.mod.length > 0) return "bg-orange-500/20 text-orange-300"
-  // highlight-end
   return "bg-gray-500/20 text-gray-300"
 }
 
@@ -94,6 +103,16 @@ const getRoleColor = (player: Player) => {
   const handleMutePlayer = (player: Player) => {
     setSelectedPlayer(player)
     setMuteDialogOpen(true)
+  }
+
+  const handleLegendPlayer = (player: Player) => {
+    setSelectedPlayer(player)
+    setLegendDialogOpen(true)
+  }
+
+  const handleModPlayer = (player: Player) => {
+    setSelectedPlayer(player)
+    setModDialogOpen(true)
   }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +198,18 @@ const getRoleColor = (player: Player) => {
                               <VolumeX className="h-3 w-3" />
                               Mute
                             </Button>
+                            {canManageRoles && (
+                              <>
+                                <Button size="sm" variant="outline" onClick={() => handleLegendPlayer(player)} className="gap-1">
+                                  <Crown className="h-3 w-3" />
+                                  Legend
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => handleModPlayer(player)} className="gap-1">
+                                  <Zap className="h-3 w-3" />
+                                  Mod
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </TableCell>
                       </motion.tr>
@@ -220,6 +251,18 @@ const getRoleColor = (player: Player) => {
                               <VolumeX className="h-4 w-4 mr-2" />
                               Mutar Player
                             </DropdownMenuItem>
+                            {canManageRoles && (
+                              <>
+                                <DropdownMenuItem onClick={() => handleLegendPlayer(player)}>
+                                  <Crown className="h-4 w-4 mr-2" />
+                                  Dar Legend
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleModPlayer(player)}>
+                                  <Zap className="h-4 w-4 mr-2" />
+                                  Dar Mod
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -276,6 +319,40 @@ const getRoleColor = (player: Player) => {
         open={muteDialogOpen}
         onOpenChange={setMuteDialogOpen}
         currentUser={currentUser}
+      />
+
+      <LegendPlayerDialog
+        player={selectedPlayer}
+        open={legendDialogOpen}
+        onOpenChange={setLegendDialogOpen}
+        onSuccess={() => {
+          setCurrentPage(1)
+          setTimeout(() => {
+            fetch(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
+              .then(r => r.json())
+              .then(data => {
+                setPlayers(data.players)
+                setTotalCount(data.totalCount)
+              })
+          }, 500)
+        }}
+      />
+
+      <ModPlayerDialog
+        player={selectedPlayer}
+        open={modDialogOpen}
+        onOpenChange={setModDialogOpen}
+        onSuccess={() => {
+          setCurrentPage(1)
+          setTimeout(() => {
+            fetch(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
+              .then(r => r.json())
+              .then(data => {
+                setPlayers(data.players)
+                setTotalCount(data.totalCount)
+              })
+          }, 500)
+        }}
       />
     </>
   )

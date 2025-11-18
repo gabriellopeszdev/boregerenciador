@@ -17,6 +17,8 @@ export interface Player {
   mod: number[] | null
   campAdmin: number
   prof: number
+  vip?: number
+  expired_vip?: string | null
 }
 
 export interface Ban {
