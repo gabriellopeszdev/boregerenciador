@@ -1,7 +1,7 @@
 import { getServerAuthSession } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { PlayersTable } from "@/components/players-table"
-import { canManageRoles } from "@/lib/discord-roles"
+import { canManageRoles, getUserRoles } from "@/lib/discord-roles"
 import { RoleButtonClient } from "@/components/role-button-client"
 import ResetVipButton from "@/components/reset-vip-button"
 import { isUserCeo } from "@/lib/discord-roles"
@@ -18,6 +18,15 @@ export default async function DashboardPage() {
 
   const hasPermission = await canManageRoles()
   const isCeoServer = await isUserCeo()
+  const userRoles = await getUserRoles()
+
+  // Criar objeto currentUser com base nos roles do Discord
+  const currentUser = {
+    ...session.user,
+    ceo: userRoles.isCEO ? 1 : 0,
+    diretor: userRoles.isDiretor ? 1 : 0,
+    gerente: userRoles.isGerente ? [] : null,
+  }
 
   // DEBUG: logar sessão e permissão no servidor para investigação
   try {
@@ -29,6 +38,8 @@ export default async function DashboardPage() {
     })
     // eslint-disable-next-line no-console
     console.log('[dashboard/page] hasPermission:', hasPermission)
+    // eslint-disable-next-line no-console
+    console.log('[dashboard/page] userRoles:', userRoles)
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('[dashboard/page] erro ao logar debug:', err)
@@ -83,7 +94,7 @@ export default async function DashboardPage() {
         </div>
       )} */}
 
-      <PlayersTable currentUser={session.user} />
+      <PlayersTable currentUser={currentUser} />
     </div>
   )
 }

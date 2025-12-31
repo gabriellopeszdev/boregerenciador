@@ -8,11 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { motion } from "framer-motion"
-import { Search, Ban, VolumeX, Crown, Shield, Star, Briefcase, Gavel, MoreVertical, ChevronLeft, ChevronRight, Loader2, Zap } from "lucide-react"
+import { Ban, VolumeX, Shield, Star, Briefcase, Gavel, MoreVertical, ChevronLeft, ChevronRight, Loader2, Key, Search } from "lucide-react"
 import { BanPlayerDialog } from "./ban-player-dialog"
 import { MutePlayerDialog } from "./mute-player-dialog"
-import { LegendPlayerDialog } from "./legend-player-dialog"
-import { ModPlayerDialog } from "./mod-player-dialog"
+import { ChangePasswordDialog } from "./change-password-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 const API_URL = "/api/players";
@@ -31,9 +30,7 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
-  const [legendDialogOpen, setLegendDialogOpen] = useState(false);
-  const [modDialogOpen, setModDialogOpen] = useState(false);
-  const [canManageRoles, setCanManageRoles] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
 
   useEffect(() => {
     async function fetchPlayers() {
@@ -56,20 +53,10 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
     fetchPlayers();
   }, [currentPage, searchTerm]);
 
-  useEffect(() => {
-    if (currentUser) {
-      const hasPermission = 
-        currentUser.ceo === 1 || 
-        (currentUser.diretor && currentUser.diretor > 0) ||
-        (currentUser.gerente && currentUser.gerente?.length > 0)
-      setCanManageRoles(hasPermission)
-    }
-  }, [currentUser])
-
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE);
 
 const getRoleIcon = (player: Player) => {
-  if (player.ceo === 1) return <Crown className="h-4 w-4 text-yellow-500" />
+  if (player.ceo === 1) return <Shield className="h-4 w-4 text-yellow-500" />
   if (player.diretor === 1) return <Shield className="h-4 w-4 text-purple-500" />
   if (player.admin && player.admin.length > 0) return <Star className="h-4 w-4 text-blue-500" />
   if (player.gerente && player.gerente.length > 0) return <Briefcase className="h-4 w-4 text-green-500" />
@@ -105,14 +92,9 @@ const getRoleColor = (player: Player) => {
     setMuteDialogOpen(true)
   }
 
-  const handleLegendPlayer = (player: Player) => {
+  const handleChangePassword = (player: Player) => {
     setSelectedPlayer(player)
-    setLegendDialogOpen(true)
-  }
-
-  const handleModPlayer = (player: Player) => {
-    setSelectedPlayer(player)
-    setModDialogOpen(true)
+    setPasswordDialogOpen(true)
   }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,18 +180,10 @@ const getRoleColor = (player: Player) => {
                               <VolumeX className="h-3 w-3" />
                               Mute
                             </Button>
-                            {canManageRoles && (
-                              <>
-                                <Button size="sm" variant="outline" onClick={() => handleLegendPlayer(player)} className="gap-1">
-                                  <Crown className="h-3 w-3" />
-                                  Legend
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => handleModPlayer(player)} className="gap-1">
-                                  <Zap className="h-3 w-3" />
-                                  Mod
-                                </Button>
-                              </>
-                            )}
+                            <Button size="sm" variant="outline" onClick={() => handleChangePassword(player)} className="gap-1">
+                              <Key className="h-3 w-3" />
+                              Senha
+                            </Button>
                           </div>
                         </TableCell>
                       </motion.tr>
@@ -251,18 +225,10 @@ const getRoleColor = (player: Player) => {
                               <VolumeX className="h-4 w-4 mr-2" />
                               Mutar Player
                             </DropdownMenuItem>
-                            {canManageRoles && (
-                              <>
-                                <DropdownMenuItem onClick={() => handleLegendPlayer(player)}>
-                                  <Crown className="h-4 w-4 mr-2" />
-                                  Dar Legend
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleModPlayer(player)}>
-                                  <Zap className="h-4 w-4 mr-2" />
-                                  Dar Mod
-                                </DropdownMenuItem>
-                              </>
-                            )}
+                            <DropdownMenuItem onClick={() => handleChangePassword(player)}>
+                              <Key className="h-4 w-4 mr-2" />
+                              Alterar Senha
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -321,28 +287,11 @@ const getRoleColor = (player: Player) => {
         currentUser={currentUser}
       />
 
-      <LegendPlayerDialog
+      <ChangePasswordDialog
         player={selectedPlayer}
-        open={legendDialogOpen}
-        onOpenChange={setLegendDialogOpen}
-        onSuccess={() => {
-          setCurrentPage(1)
-          setTimeout(() => {
-            fetch(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
-              .then(r => r.json())
-              .then(data => {
-                setPlayers(data.players)
-                setTotalCount(data.totalCount)
-              })
-          }, 500)
-        }}
-      />
-
-      <ModPlayerDialog
-        player={selectedPlayer}
-        open={modDialogOpen}
-        onOpenChange={setModDialogOpen}
-        onSuccess={() => {
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+        onPasswordChanged={() => {
           setCurrentPage(1)
           setTimeout(() => {
             fetch(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)

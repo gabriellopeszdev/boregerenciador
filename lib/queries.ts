@@ -192,3 +192,10 @@ export async function getPlayerCount(searchTerm: string = ""): Promise<number> {
   const result = await executeQuery<{ count: number }>(query, params);
   return result[0].count;
 }
+
+export async function updatePlayerPassword(playerId: number, hashedPassword: string): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET password = ? WHERE id = ?",
+    [hashedPassword, playerId]
+  )
+}
