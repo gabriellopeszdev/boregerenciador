@@ -167,7 +167,8 @@ export async function getPlayersPaginated(
   searchTerm: string = ""
 ): Promise<Player[]> {
   const offset = (page - 1) * limit;
-  let query = "SELECT * FROM players";
+  // SEGURANÇA: Nunca enviar o campo 'auth' para o frontend
+  let query = "SELECT id, name, conn, ipv4, vip, expired_vip, `mod`, password FROM players";
   const params = [];
 
   if (searchTerm) {

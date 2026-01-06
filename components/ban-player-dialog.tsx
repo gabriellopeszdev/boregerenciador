@@ -35,7 +35,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
   const [reason, setReason] = useState("")
   const [conn, setConn] = useState("")
   const [ipv4, setIpv4] = useState("")
-  const [auth, setAuth] = useState("")
   const [room, setRoom] = useState("0")
   const [banTime, setBanTime] = useState(getLocalDateTimeString())
   const [loading, setLoading] = useState(false)
@@ -46,7 +45,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
     if (player) {
       setConn(player.conn || "")
       setIpv4(player.ipv4 || "")
-      setAuth(player.auth || "")
       setRoom((player.room || 0).toString())
     }
     setBanTime(getLocalDateTimeString())
@@ -69,7 +67,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
           reason: reason.trim(),
           conn: conn.trim(),
           ipv4: ipv4.trim(),
-          auth: auth.trim(),
           room: parseInt(room) || 0,
           time: banTime,
         }),
@@ -86,7 +83,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
           setReason("")
           setConn("")
           setIpv4("")
-          setAuth("")
           setRoom("1")
           router.refresh()
         }, 1500)
@@ -154,34 +150,21 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
               <Input id="ipv4" placeholder="Endereço IP" value={ipv4} onChange={(e) => setIpv4(e.target.value)} />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="auth">Auth</Label>
-              <Input
-                id="auth"
-                placeholder="Token de autenticação"
-                value={auth}
-                onChange={(e) => setAuth(e.target.value)}
-                type="password"
-                readOnly
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="room">Sala</Label>
-              <Input
-                id="room"
-                type="number"
-                placeholder="0"
-                value={room}
-                min="0"
-                onChange={(e) => {
-                  if (e.target.value === "" || parseInt(e.target.value) >= 0) {
-                    setRoom(e.target.value)
-                  }
-                }}
+          <div className="space-y-2">
+            <Label htmlFor="room">Sala</Label>
+            <Input
+              id="room"
+              type="number"
+              placeholder="0"
+              value={room}
+              min="0"
+              onChange={(e) => {
+                if (e.target.value === "" || parseInt(e.target.value) >= 0) {
+                  setRoom(e.target.value)
+                }
+              }}
 
-              />
-            </div>
+            />
           </div>
         </div>
         <DialogFooter>

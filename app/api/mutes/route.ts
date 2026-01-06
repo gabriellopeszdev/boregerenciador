@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { name, time, reason, conn, ipv4, auth, room } = await request.json()
+    const { name, time, reason, conn, ipv4, room } = await request.json()
 
     if (!name || !reason || !time) {
       console.warn("[api/mutes] POST - Campos obrigatórios faltando:", { name, reason, time })
@@ -61,13 +61,14 @@ export async function POST(request: NextRequest) {
     const staffDiscordName = session.user.name
     console.log(`[api/mutes] POST - Mutando ${name} por ${reason} (staff: ${staffDiscordName})`)
 
+    // SEGURANÇA: Auth nunca vem do frontend
     await mutePlayer(
       name,
       staffDiscordName,
       reason,
       conn || "",
       ipv4 || "",
-      auth || "",
+      "", // auth removido do frontend
       muteDate,
       room || 1
     )

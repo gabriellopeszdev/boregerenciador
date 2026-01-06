@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { name, time, reason, conn, ipv4, auth, room } = await request.json()
+    const { name, time, reason, conn, ipv4, room } = await request.json()
 
     if (!name || !reason || !time) {
       console.warn("[api/bans] POST - Campos obrigatórios faltando:", { name, reason, time })
@@ -61,13 +61,15 @@ export async function POST(request: NextRequest) {
     const staffDiscordName = session.user.name
     console.log(`[api/bans] POST - Banindo ${name} por ${reason} (staff: ${staffDiscordName})`)
 
+    // SEGURANÇA: Auth nunca vem do frontend, buscar diretamente do banco se necessário
+    // Por enquanto, deixamos vazio pois o auth não é obrigatório para ban
     await banPlayer(
       name,
       staffDiscordName,
       reason,
       conn || "",
       ipv4 || "",
-      auth || "",
+      "", // auth removido do frontend
       banDate,
       room || 0,
     )

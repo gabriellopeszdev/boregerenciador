@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     ...session.user,
     ceo: userRoles.isCEO ? 1 : 0,
     diretor: userRoles.isDiretor ? 1 : 0,
-    gerente: userRoles.isGerente ? [] : null,
+    gerente: userRoles.isGerente ? [1] : null,
   }
 
   // DEBUG: logar sessão e permissão no servidor para investigação

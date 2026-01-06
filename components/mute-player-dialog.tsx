@@ -36,7 +36,6 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
   const [muteTime, setMuteTime] = useState(getLocalDateTimeString())
   const [conn, setConn] = useState("")
   const [ipv4, setIpv4] = useState("")
-  const [auth, setAuth] = useState("")
   const [room, setRoom] = useState("0")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -46,7 +45,6 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
     if (open && player) {
       setConn(player.conn || "")
       setIpv4(player.ipv4 || "")
-      setAuth(player.auth || "")
       setRoom((player.room ?? 0).toString())
       setReason("")
       setMuteTime(getLocalDateTimeString())
@@ -70,7 +68,6 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
           time: muteTime,
           conn: conn.trim(),
           ipv4: ipv4.trim(),
-          auth: auth.trim(),
           room: parseInt(room) ?? 0,
         }),
       })
@@ -150,26 +147,20 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
               <Input id="ipv4" value={ipv4} readOnly />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="auth">Auth</Label>
-              <Input id="auth" value={auth} readOnly type="password" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="room">Sala</Label>
-              <Input
-                id="room"
-                type="number"
-                placeholder="0"
-                value={room}
-                min="0"
-                onChange={(e) => {
-                  if (e.target.value === "" || parseInt(e.target.value) >= 0) {
-                    setRoom(e.target.value)
-                  }
-                }}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="room">Sala</Label>
+            <Input
+              id="room"
+              type="number"
+              placeholder="0"
+              value={room}
+              min="0"
+              onChange={(e) => {
+                if (e.target.value === "" || parseInt(e.target.value) >= 0) {
+                  setRoom(e.target.value)
+                }
+              }}
+            />
           </div>
         </div>
         <DialogFooter>

@@ -82,6 +82,11 @@ const getRoleColor = (player: Player) => {
   return "bg-gray-500/20 text-gray-300"
 }
 
+const canChangePassword = (user: any) => {
+  if (!user) return false
+  return user.ceo === 1 || user.diretor === 1 || (user.gerente && Array.isArray(user.gerente) && user.gerente.length > 0)
+}
+
   const handleBanPlayer = (player: Player) => {
     setSelectedPlayer(player)
     setBanDialogOpen(true)
@@ -180,10 +185,12 @@ const getRoleColor = (player: Player) => {
                               <VolumeX className="h-3 w-3" />
                               Mute
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleChangePassword(player)} className="gap-1">
-                              <Key className="h-3 w-3" />
-                              Senha
-                            </Button>
+                            {canChangePassword(currentUser) && (
+                              <Button size="sm" variant="outline" onClick={() => handleChangePassword(player)} className="gap-1">
+                                <Key className="h-3 w-3" />
+                                Senha
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </motion.tr>
@@ -225,10 +232,12 @@ const getRoleColor = (player: Player) => {
                               <VolumeX className="h-4 w-4 mr-2" />
                               Mutar Player
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleChangePassword(player)}>
-                              <Key className="h-4 w-4 mr-2" />
-                              Alterar Senha
-                            </DropdownMenuItem>
+                            {canChangePassword(currentUser) && (
+                              <DropdownMenuItem onClick={() => handleChangePassword(player)}>
+                                <Key className="h-4 w-4 mr-2" />
+                                Alterar Senha
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
