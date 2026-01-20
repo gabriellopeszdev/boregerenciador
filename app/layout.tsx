@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/auth-provider"
 import { Suspense } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
+import VhFix from "@/components/vh-fix"
 
 export const metadata: Metadata = {
   title: "Bore Admin Painel",
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="dark">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+        <VhFix />
         <Suspense fallback={null}>
           <AuthProvider>{children}</AuthProvider>
         </Suspense>
