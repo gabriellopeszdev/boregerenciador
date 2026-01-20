@@ -14,15 +14,13 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    /*
-     * Protege todas as rotas, exceto:
-     * - / (home, tela de boas-vindas)
-     * - /api (rotas de API)
-     * - /_next/static (arquivos estáticos)
-     * - /_next/image (arquivos de imagem)
-     * - favicon.ico (ícone)
-     * - /login (página de login, para quebrar o loop)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|login|$).*)',
-  ],
+  /*
+   * Protege todas as rotas, exceto:
+   * - / (home) e /login
+   * - api, _next/static, _next/image (arquivos internos)
+   * - _vercel (analytics que está dando erro de MIME)
+   * - favicon.ico e logo_bore.png (arquivos na raiz da pasta public)
+   */
+  '/((?!api|_next/static|_next/image|_vercel|favicon.ico|logo_bore.png|login|$).*)',
+],
 }
