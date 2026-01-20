@@ -66,7 +66,7 @@ export default function HomePage() {
             className="bg-black/70 rounded-full p-3 shadow-lg flex items-center justify-center"
             style={{ width: 186, height: 186 }}
           >
-            <Image src="/logo_bore.png" alt="Logo Bore" width={120} height={120} className="object-contain" priority />
+            <Image src="/logobore.png" alt="Logo Bore" width={120} height={120} className="object-contain" priority />
           </motion.div>
         </motion.div>
 
