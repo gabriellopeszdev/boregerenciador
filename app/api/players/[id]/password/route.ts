@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { getPlayerById, updatePlayerPassword } from "@/lib/queries"
 import { encryptPassword } from "@/lib/encryption"
 import type { Player } from "@/lib/types"
+import { getUserRoles } from "@/lib/discord-roles"
 
 export async function PUT(
   request: Request,
@@ -18,16 +19,9 @@ export async function PUT(
     const { id } = await params
     const playerId = parseInt(id)
 
-    // Buscar o jogador que está fazendo a alteração
-    const currentUser = session.user as any as Player
-
-    // Verificar se tem permissão (CEO, Diretor ou Gerente)
-    const hasPermission =
-      currentUser.ceo === 1 ||
-      currentUser.diretor === 1 ||
-      (currentUser.gerente && Array.isArray(currentUser.gerente) && currentUser.gerente.length > 0)
-
-    if (!hasPermission) {
+    // Verificar se o usuário tem permissão via Discord (CEO, Diretor ou Gerente)
+    const userRoles = await getUserRoles()
+    if (!userRoles.hasAnyPermission) {
       return Response.json(
         { error: "Você não tem permissão para alterar senhas" },
         { status: 403 }

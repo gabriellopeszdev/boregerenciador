@@ -37,6 +37,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   const menuItems = [
+    { href: "/dashboard/welcome", icon: Shield, label: "Boas-vindas" },
     { href: "/dashboard", icon: Users, label: "Players" },
     { href: "/dashboard/bans", icon: Ban, label: "Bans" },
     { href: "/dashboard/mutes", icon: VolumeX, label: "Mutes" },

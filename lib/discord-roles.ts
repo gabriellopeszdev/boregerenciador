@@ -35,10 +35,12 @@ export async function getUserRoles(): Promise<UserRoles> {
     const guildId = process.env.DISCORD_GUILD_ID
     const ceoRoleId = process.env.DISCORD_CEO_ROLE_ID
     const diretorRoleId = process.env.DISCORD_DIRETOR_ROLE_ID
-    const gerenteRoleId = process.env.DISCORD_GERENTE_ROLE_ID
+    // Suporta múltiplos IDs de gerente separados por vírgula (ex: "id1,id2,id3")
+    const gerenteRoleEnv = process.env.DISCORD_GERENTE_ROLE_ID || ""
+    const gerenteRoleIds = gerenteRoleEnv.split(",").map(s => s.trim()).filter(Boolean)
 
-    if (!guildId || !ceoRoleId || !diretorRoleId || !gerenteRoleId) {
-      console.warn("[discord-roles] Variáveis de ambiente faltando.")
+    if (!guildId || !ceoRoleId || !diretorRoleId || gerenteRoleIds.length === 0) {
+      console.warn("[discord-roles] Variáveis de ambiente faltando (verifique CE0/DIRETOR/GERENTE).")
       return { isCEO: false, isDiretor: false, isGerente: false, hasAnyPermission: false }
     }
 
@@ -74,11 +76,15 @@ export async function getUserRoles(): Promise<UserRoles> {
     const member = await response.json()
     const userRoles: string[] = member.roles || []
 
+    const isGerente = gerenteRoleIds.length > 0
+      ? gerenteRoleIds.some(id => userRoles.includes(id))
+      : false
+
     const result: UserRoles = {
-      isCEO: userRoles.includes(ceoRoleId),
-      isDiretor: userRoles.includes(diretorRoleId),
-      isGerente: userRoles.includes(gerenteRoleId),
-      hasAnyPermission: userRoles.includes(ceoRoleId) || userRoles.includes(diretorRoleId) || userRoles.includes(gerenteRoleId)
+      isCEO: ceoRoleId ? userRoles.includes(ceoRoleId) : false,
+      isDiretor: diretorRoleId ? userRoles.includes(diretorRoleId) : false,
+      isGerente,
+      hasAnyPermission: (ceoRoleId ? userRoles.includes(ceoRoleId) : false) || (diretorRoleId ? userRoles.includes(diretorRoleId) : false) || isGerente
     }
 
     // 3. SALVA NO CACHE GLOBAL

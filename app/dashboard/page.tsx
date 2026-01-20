@@ -1,13 +1,9 @@
-import { getServerAuthSession } from "@/lib/auth"
-import { redirect } from "next/navigation"
-import { PlayersTable } from "@/components/players-table"
-import { canManageRoles, getUserRoles } from "@/lib/discord-roles"
-import { RoleButtonClient } from "@/components/role-button-client"
-import ResetVipButton from "@/components/reset-vip-button"
-import { isUserCeo } from "@/lib/discord-roles"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Ban, VolumeX, Crown } from "lucide-react"
+import { getServerAuthSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { canManageRoles, getUserRoles, isUserCeo } from "@/lib/discord-roles";
+import ModuleCard from "@/components/module-card";
+import { Ban, VolumeX, Users, Shield, Server } from "lucide-react";
+import Image from "next/image";
 
 export default async function DashboardPage() {
   const session = await getServerAuthSession()
@@ -20,81 +16,48 @@ export default async function DashboardPage() {
   const isCeoServer = await isUserCeo()
   const userRoles = await getUserRoles()
 
-  // Criar objeto currentUser com base nos roles do Discord
-  const currentUser = {
-    ...session.user,
-    ceo: userRoles.isCEO ? 1 : 0,
-    diretor: userRoles.isDiretor ? 1 : 0,
-    gerente: userRoles.isGerente ? [1] : null,
-  }
-
-  // DEBUG: logar sessão e permissão no servidor para investigação
-  try {
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/page] session (server):', {
-      user: session?.user?.name ?? null,
-      id: session?.user?.id ?? null,
-      accessToken: (session as any)?.accessToken ?? null,
-    })
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/page] hasPermission:', hasPermission)
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/page] userRoles:', userRoles)
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('[dashboard/page] erro ao logar debug:', err)
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Gerenciamento de Players</h1>
-          <p className="text-muted-foreground">Visualize e gerencie todos os players do servidor</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {/* Server-side button (fallback) for users already permitted by Discord roles */}
+    <main className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-[#23272f] overflow-hidden">
+      <div className="w-full max-w-5xl flex flex-col items-center justify-center py-12 px-4">
+        <Image src="/logo_bore.png" alt="Logo Bore" width={70} height={70} className="mb-4" />
+        <h1 className="text-4xl font-extrabold mb-2 text-foreground text-center drop-shadow-lg">Bore Gerenciador</h1>
+        <p className="text-lg text-muted-foreground mb-10 text-center max-w-2xl">Bem-vindo ao painel de administração do sistema. Escolha um módulo para gerenciar jogadores, punições ou acessar funções avançadas.</p>
+        <div className="flex flex-wrap justify-center gap-8 w-full">
+          <ModuleCard
+            href="/dashboard/players"
+            icon={<Users className="w-6 h-6 text-blue-600" />}
+            title="Players"
+            description="Visualize e gerencie todos os jogadores do servidor."
+          />
+          <ModuleCard
+            href="/dashboard/bans"
+            icon={<Ban className="w-6 h-6 text-red-500" />}
+            title="Bans"
+            description="Gerencie solicitações de banimento e desbanimento."
+          />
+          <ModuleCard
+            href="/dashboard/mutes"
+            icon={<VolumeX className="w-6 h-6 text-yellow-500" />}
+            title="Mutes"
+            description="Gerencie solicitações de mute e desmute."
+          />
           {hasPermission && (
-            <Button asChild>
-              <Link href="/dashboard/roles">
-                <Crown className="h-4 w-4 mr-2" />
-                Setar Legend & Mod
-              </Link>
-            </Button>
+            <ModuleCard
+              href="/dashboard/roles"
+              icon={<Server className="w-6 h-6 text-indigo-500" />}
+              title="Roles"
+              description="Defina Mod e Legend para jogadores rapidamente."
+            />
           )}
-
-          {/* Client-side check/button (keeps verifying via accessToken) - use server fallback to avoid flicker */}
-          <div className="hidden sm:block">
-            <RoleButtonClient initialCanManage={hasPermission} />
-          </div>
-          <div className="hidden sm:block">
-            <ResetVipButton initialIsCeo={isCeoServer} />
-          </div>
-          <Button variant="destructive" asChild>
-            <Link href="/dashboard/bans">
-              <Ban className="h-4 w-4 mr-2" />
-              Desbanir Player
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/dashboard/mutes">
-              <VolumeX className="h-4 w-4 mr-2" />
-              Desmutar Player
-            </Link>
-          </Button>
+          <ModuleCard
+            href="/dashboard/admin"
+            icon={<Shield className="w-6 h-6 text-purple-600" />}
+            title="Admin Endpoints"
+            description="Acesse e monitore os endpoints públicos detalhadamente."
+          />
         </div>
+        <footer className="mt-12 text-muted-foreground text-xs opacity-70 text-center w-full">&copy; {new Date().getFullYear()} Bore Gerenciador</footer>
       </div>
-      {/* DEBUG PANEL - visible only in development to inspect session & permission */}
-      {/* {process.env.NODE_ENV !== "production" && (
-        <div className="rounded-md border p-3 bg-muted/10 text-sm text-muted-foreground">
-          <div className="font-medium">Debug (dev): sessão e permissão</div>
-          <div>Usuário: {session.user?.name ?? "-"}</div>
-          <div>HasPermission: {String(hasPermission)}</div>
-          <div>AccessToken presente: {Boolean((session as any)?.accessToken) ? "sim" : "não"}</div>
-        </div>
-      )} */}
-
-      <PlayersTable currentUser={currentUser} />
-    </div>
-  )
+    </main>
+  );
 }

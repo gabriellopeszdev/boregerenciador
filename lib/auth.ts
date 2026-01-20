@@ -63,8 +63,15 @@ export const authOptions: AuthOptions = {
       return session
     },
   },
+  // Limitar duração da sessão para 1 hora (3600 segundos)
+  // Isso faz com que cookies/sessions antigos expirem rapidamente após atualizações
+  // e reduz problemas com cookies antigos perdendo acesso após deploys.
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60, // 1 hora
+  },
+  jwt: {
+    maxAge: 60 * 60, // 1 hora
   },
 }
 
