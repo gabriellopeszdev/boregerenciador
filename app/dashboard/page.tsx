@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   const userRoles = await getUserRoles()
 
   return (
-    <main className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-[#23272f] overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-[#23272f]">
       <div className="w-full max-w-5xl flex flex-col items-center justify-center py-12 px-4">
         <Image src="/logobore.png" alt="Logo Bore" width={70} height={70} className="mb-4 object-contain" unoptimized />
         <h1 className="text-4xl font-extrabold mb-2 text-foreground text-center drop-shadow-lg">Bore Gerenciador</h1>
