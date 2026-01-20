@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   return (
     <main className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-[#23272f] overflow-hidden">
       <div className="w-full max-w-5xl flex flex-col items-center justify-center py-12 px-4">
-        <Image src="/logo_bore.png" alt="Logo Bore" width={70} height={70} className="mb-4" />
+        <Image src="/logo_bore.png" alt="Logo Bore" width={70} height={70} className="mb-4 object-contain" unoptimized />
         <h1 className="text-4xl font-extrabold mb-2 text-foreground text-center drop-shadow-lg">Bore Gerenciador</h1>
         <p className="text-lg text-muted-foreground mb-10 text-center max-w-2xl">Bem-vindo ao painel de administração do sistema. Escolha um módulo para gerenciar jogadores, punições ou acessar funções avançadas.</p>
         <div className="flex flex-wrap justify-center gap-8 w-full">
