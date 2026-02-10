@@ -18,7 +18,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     console.log(`[api/bans/[id]/unban] Removendo ban ${banId}`)
-    await unbanPlayer(banId)
+    unbanPlayer(banId)
     console.log(`[api/bans/[id]/unban] Ban ${banId} removido com sucesso`)
     
     return NextResponse.json({ success: true })

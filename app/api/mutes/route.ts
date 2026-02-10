@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     console.log(`[api/mutes] POST - Mutando ${name} por ${reason} (staff: ${staffDiscordName})`)
 
     // SEGURANÇA: Auth nunca vem do frontend
-    await mutePlayer(
+    mutePlayer(
       name,
       staffDiscordName,
       reason,

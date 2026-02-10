@@ -43,7 +43,7 @@ function LogPanel({ endpoint, title }: { endpoint: string; title: string }) {
       {loading && <div className="text-sm text-muted-foreground">Carregando...</div>}
       {error && <div className="text-sm text-red-500">Erro: {error}</div>}
       {!loading && !error && (
-        <pre className="overflow-x-auto max-h-96 bg-muted rounded p-3 text-xs whitespace-pre-wrap">
+        <pre className="overflow-auto max-h-96 bg-muted rounded p-3 text-xs whitespace-pre-wrap">
           {JSON.stringify(data, null, 2)}
         </pre>
       )}

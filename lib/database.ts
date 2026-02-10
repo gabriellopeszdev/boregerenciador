@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise"
+import mysql, { type Pool } from "mysql2/promise"
 
 const dbConfig = {
   host: process.env.DB_HOST,
@@ -14,7 +14,7 @@ const dbConfig = {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __MYSQL_POOL__: mysql.Pool | undefined
+  var __MYSQL_POOL__: Pool | undefined
 }
 
 export function getPool() {
@@ -29,7 +29,7 @@ export function getPool() {
 
 export async function executeQuery<T = any>(query: string, params: any[] = []): Promise<T[]> {
   const pool = getPool()
-  const MAX_RETRIES = 5
+  const MAX_RETRIES = 3
   let lastError: any
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {

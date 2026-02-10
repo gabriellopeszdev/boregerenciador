@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ]
 
   return (
-    <div className="min-h-screen bg-background lg:flex">
+    <div className="flex flex-col lg:flex h-screen">
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0">
+      <main className="flex-1 min-w-0 overflow-y-auto">
         <div className="p-6 pt-20 lg:pt-4">{children}</div>
       </main>
 

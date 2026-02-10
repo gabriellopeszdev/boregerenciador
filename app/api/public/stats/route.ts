@@ -1,20 +1,31 @@
-import { NextResponse } from 'next/server';
-import { executeQuery } from '@/lib/database';
+import { NextRequest, NextResponse } from 'next/server';
+import { getStatsPaginated } from '@/lib/queries';
 
-// GET /api/public/stats
-export async function GET() {
+// GET /api/public/stats?page=1&limit=50&search=&sortBy=points&sortOrder=desc
+export async function GET(request: NextRequest) {
   try {
-    console.log('[API] /api/public/stats - requisitado');
-    const stats = await executeQuery(`
-      SELECT s.*, p.name as playerName, r.name as roomName
-      FROM stats s
-      JOIN players p ON s.player_id = p.id
-      JOIN rooms r ON s.room_id = r.id
-      ORDER BY s.points DESC, s.elo DESC
-      LIMIT 100
-    `);
-    console.log(`[API] /api/public/stats - retornou ${stats.length} registros`);
-    return NextResponse.json(stats);
+    const url = new URL(request.url);
+    const page = Number.parseInt(url.searchParams.get('page') || '1');
+    const limit = Number.parseInt(url.searchParams.get('limit') || '50');
+    const search = url.searchParams.get('search') || '';
+    const sortBy = url.searchParams.get('sortBy') || 'points';
+    const sortOrder = (url.searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc';
+
+    console.log(`[API] /api/public/stats - página ${page}, limite ${limit}, busca: "${search}"`);
+    
+    const { data, total } = await getStatsPaginated(page, limit, search, sortBy, sortOrder);
+    
+    console.log(`[API] /api/public/stats - retornando ${data.length} de ${total} registros`);
+    
+    return NextResponse.json({
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error('[API] /api/public/stats - erro:', error);
     return NextResponse.json({ error: 'Erro ao buscar stats', details: String(error) }, { status: 500 });

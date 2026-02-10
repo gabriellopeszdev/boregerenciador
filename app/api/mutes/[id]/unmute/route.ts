@@ -18,7 +18,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     console.log(`[api/mutes/[id]/unmute] Removendo mute ${muteId}`)
-    await unmutePlayer(muteId)
+    unmutePlayer(muteId)
     console.log(`[api/mutes/[id]/unmute] Mute ${muteId} removido com sucesso`)
     
     return NextResponse.json({ success: true })
