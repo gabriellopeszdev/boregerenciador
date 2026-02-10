@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env.local
+.env.*.local
+.next
+.DS_Store
+.vercel
+pnpm-lock.yaml
+yarn.lock
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+.eslintrc.json
+tsconfig.json
