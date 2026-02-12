@@ -216,7 +216,7 @@ function emitToGame(event: string, data: any): void {
   }
 }
 
-export function banPlayer(
+export async function banPlayer(
   name: string,
   bannedBy: string,
   reason: string,
@@ -225,15 +225,20 @@ export function banPlayer(
   auth: string,
   time: Date,
   room = 0,
-): void {
+): Promise<void> {
+  await executeQuery(
+    "INSERT INTO bans (name, banned_by, reason, conn, ipv4, auth, time, room) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [name, bannedBy, reason, conn, ipv4, auth, time, room]
+  )
   emitToGame("command:ban", { name, bannedBy, reason, conn, ipv4, auth, time: time.toISOString(), room })
 }
 
-export function unbanPlayer(banId: number): void {
+export async function unbanPlayer(banId: number): Promise<void> {
+  await executeQuery("DELETE FROM bans WHERE id = ?", [banId])
   emitToGame("command:unban", { id: banId })
 }
 
-export function mutePlayer(
+export async function mutePlayer(
   name: string,
   mutedBy: string,
   reason: string,
@@ -242,11 +247,16 @@ export function mutePlayer(
   auth: string,
   time: Date,
   room = 0,
-): void {
+): Promise<void> {
+  await executeQuery(
+    "INSERT INTO mutes (name, muted_by, reason, conn, ipv4, auth, time, room) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [name, mutedBy, reason, conn, ipv4, auth, time, room]
+  )
   emitToGame("command:mute", { name, mutedBy, reason, conn, ipv4, auth, time: time.toISOString(), room })
 }
 
-export function unmutePlayer(muteId: number): void {
+export async function unmutePlayer(muteId: number): Promise<void> {
+  await executeQuery("DELETE FROM mutes WHERE id = ?", [muteId])
   emitToGame("command:unmute", { id: muteId })
 }
 

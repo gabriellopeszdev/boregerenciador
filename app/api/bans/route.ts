@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     // SEGURANÇA: Auth nunca vem do frontend, buscar diretamente do banco se necessário
     // Por enquanto, deixamos vazio pois o auth não é obrigatório para ban
-    banPlayer(
+    await banPlayer(
       name,
       staffDiscordName,
       reason,
