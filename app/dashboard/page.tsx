@@ -17,8 +17,8 @@ export default async function DashboardPage() {
   const userRoles = await getUserRoles()
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-start md:justify-center bg-gradient-to-br from-background to-[#23272f] pt-4" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-      <div className="w-full max-w-5xl flex flex-col items-center justify-center py-6 px-4">
+    <main className="flex flex-col items-center justify-between h-full py-4 px-2">
+      <div className="w-full max-w-5xl flex flex-col items-center justify-center py-6 px-4 flex-1">
           <Image src="/logobore.png" alt="Logo Bore" width={64} height={64} className="mb-3 object-contain" unoptimized />
           <h1 className="text-3xl font-extrabold mb-1 text-foreground text-center drop-shadow-lg">Bore Gerenciador</h1>
           <p className="text-base text-muted-foreground mb-4 text-center max-w-2xl">Bem-vindo ao painel de administração do sistema. Escolha um módulo para gerenciar jogadores, punições ou acessar funções avançadas.</p>
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
           />
         </div>
       </div>
-      <footer className="md:static fixed bottom-4 left-0 w-full flex justify-center z-50">
+      <footer className="w-full flex justify-center pb-2">
         <div className="px-3 py-1 rounded text-foreground text-sm">&copy; {new Date().getFullYear()} Bore Gerenciador</div>
       </footer>
     </main>

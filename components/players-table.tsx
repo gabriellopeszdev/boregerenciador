@@ -56,7 +56,7 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE);
 
 const getRoleIcon = (player: Player) => {
-  if (player.ceo === 1) return <Shield className="h-4 w-4 text-yellow-500" />
+  if (player.dono === 1) return <Shield className="h-4 w-4 text-yellow-500" />
   if (player.diretor === 1) return <Shield className="h-4 w-4 text-purple-500" />
   if (player.admin && player.admin.length > 0) return <Star className="h-4 w-4 text-blue-500" />
   if (player.gerente && player.gerente.length > 0) return <Briefcase className="h-4 w-4 text-green-500" />
@@ -65,7 +65,7 @@ const getRoleIcon = (player: Player) => {
 }
 
 const getRoleName = (player: Player) => {
-  if (player.ceo === 1) return "CEO"
+  if (player.dono === 1) return "CEO"
   if (player.diretor === 1) return "Diretor"
   if (player.admin && player.admin.length > 0) return "Admin"
   if (player.gerente && player.gerente.length > 0) return "Gerente"
@@ -74,7 +74,7 @@ const getRoleName = (player: Player) => {
 }
 
 const getRoleColor = (player: Player) => {
-  if (player.ceo === 1) return "bg-yellow-500/20 text-yellow-300"
+  if (player.dono === 1) return "bg-yellow-500/20 text-yellow-300"
   if (player.diretor === 1) return "bg-purple-500/20 text-purple-300"
   if (player.admin && player.admin.length > 0) return "bg-blue-500/20 text-blue-300"
   if (player.gerente && player.gerente.length > 0) return "bg-green-500/20 text-green-300"
@@ -84,7 +84,7 @@ const getRoleColor = (player: Player) => {
 
 const canChangePassword = (user: any) => {
   if (!user) return false
-  return user.ceo === 1 || user.diretor === 1 || (user.gerente && Array.isArray(user.gerente) && user.gerente.length > 0)
+  return user.dono === 1 || user.diretor === 1 || (user.gerente && Array.isArray(user.gerente) && user.gerente.length > 0)
 }
 
   const handleBanPlayer = (player: Player) => {

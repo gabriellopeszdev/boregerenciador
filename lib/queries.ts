@@ -82,7 +82,7 @@ export async function getMuteCount(searchTerm: string = ""): Promise<number> {
 
 export async function getPlayersPaginated(page: number, limit: number, searchTerm: string = ""): Promise<Player[]> {
   const offset = (page - 1) * limit
-  let query = "SELECT id, name, conn, ipv4, vip, expired_vip, `mod`, password FROM players"
+  let query = "SELECT id, name, conn, ipv4, vip, expired_vip, `mod`, password, dono, diretor, admin, gerente FROM players"
   const params: any[] = []
 
   if (searchTerm) {
@@ -253,26 +253,57 @@ export function unmutePlayer(muteId: number): void {
   emitToGame("command:unmute", { id: muteId })
 }
 
-export function setPlayerLegend(playerId: number, vipLevel: number, expirationDate: string): void {
+export async function setPlayerLegend(playerId: number, vipLevel: number, expirationDate: string): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET vip = ?, expired_vip = ? WHERE id = ?",
+    [vipLevel, expirationDate, playerId]
+  )
+  console.log(`[queries] DB atualizado: player ${playerId} vip=${vipLevel}, expired_vip=${expirationDate}`)
   emitToGame("command:setLegend", { playerId, vipLevel, expirationDate })
 }
 
-export function removePlayerLegend(playerId: number): void {
+export async function removePlayerLegend(playerId: number): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET vip = 0, expired_vip = NULL WHERE id = ?",
+    [playerId]
+  )
+  console.log(`[queries] DB atualizado: player ${playerId} vip removido`)
   emitToGame("command:removeLegend", { playerId })
 }
 
-export function setPlayerMod(playerId: number, rooms: number[]): void {
+export async function setPlayerMod(playerId: number, rooms: number[]): Promise<void> {
+  const roomsJson = JSON.stringify(rooms)
+  await executeQuery(
+    "UPDATE players SET `mod` = ? WHERE id = ?",
+    [roomsJson, playerId]
+  )
+  console.log(`[queries] DB atualizado: player ${playerId} mod=${roomsJson}`)
   emitToGame("command:setMod", { playerId, rooms })
 }
 
-export function removePlayerMod(playerId: number): void {
+export async function removePlayerMod(playerId: number): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET `mod` = NULL WHERE id = ?",
+    [playerId]
+  )
+  console.log(`[queries] DB atualizado: player ${playerId} mod removido`)
   emitToGame("command:removeMod", { playerId })
 }
 
-export function resetAllVip(): void {
+export async function resetAllVip(): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET vip = 0, expired_vip = NULL WHERE vip > 0",
+    []
+  )
+  console.log(`[queries] DB atualizado: todos os VIPs resetados`)
   emitToGame("command:resetAllVip", {})
 }
 
-export function updatePlayerPassword(playerId: number, hashedPassword: string): void {
+export async function updatePlayerPassword(playerId: number, hashedPassword: string): Promise<void> {
+  await executeQuery(
+    "UPDATE players SET password = ? WHERE id = ?",
+    [hashedPassword, playerId]
+  )
+  console.log(`[queries] DB atualizado: password do player ${playerId} alterada`)
   emitToGame("command:changePassword", { playerId, hashedPassword })
 }

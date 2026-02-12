@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { motion } from "framer-motion"
-import { Search, Crown, Zap, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Search, Crown, Zap, ChevronLeft, ChevronRight, Loader2, Shield, Briefcase, Star, Gavel } from "lucide-react"
 import { LegendPlayerDialog } from "./roles/legend-player-dialog"
 import { ModPlayerDialog } from "./roles/mod-player-dialog"
 
@@ -60,6 +60,26 @@ export function RolesTable({ currentUser }: RolesTableProps) {
   }
 
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE)
+
+  function parseJsonArray(value: any): number[] | null {
+    if (Array.isArray(value) && value.length > 0) return value
+    if (typeof value === "string" && value.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(value)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      } catch { /* ignore */ }
+    }
+    return null
+  }
+
+  function getPlayerCargo(player: Player) {
+    if (player.dono === 1) return { label: "Dono", color: "bg-yellow-500/20 text-yellow-300", icon: <Shield className="h-3 w-3" /> }
+    if (player.diretor === 1) return { label: "Diretor", color: "bg-purple-500/20 text-purple-300", icon: <Shield className="h-3 w-3" /> }
+    if (parseJsonArray(player.admin)) return { label: "Admin", color: "bg-blue-500/20 text-blue-300", icon: <Star className="h-3 w-3" /> }
+    if (parseJsonArray(player.gerente)) return { label: "Gerente", color: "bg-green-500/20 text-green-300", icon: <Briefcase className="h-3 w-3" /> }
+    if (parseJsonArray(player.mod)) return { label: "Mod", color: "bg-orange-500/20 text-orange-300", icon: <Gavel className="h-3 w-3" /> }
+    return { label: "Nenhum", color: "bg-gray-500/20 text-gray-400", icon: null }
+  }
 
   const handleLegendPlayer = (player: Player) => {
     setSelectedPlayer(player)
@@ -117,9 +137,9 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                     <TableRow>
                       <TableHead>ID</TableHead>
                       <TableHead>Nome</TableHead>
+                      <TableHead>Cargo</TableHead>
                       <TableHead>Legend</TableHead>
                       <TableHead>Mod</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -135,6 +155,17 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                         <TableCell className="font-mono text-sm">{player.id}</TableCell>
                         <TableCell className="font-medium">{player.name}</TableCell>
                         <TableCell>
+                          {(() => {
+                            const cargo = getPlayerCargo(player)
+                            return (
+                              <Badge className={`gap-1 ${cargo.color}`}>
+                                {cargo.icon}
+                                {cargo.label}
+                              </Badge>
+                            )
+                          })()}
+                        </TableCell>
+                        <TableCell>
                           {player.vip === 4 ? (
                             <Badge className="bg-yellow-500/20 text-yellow-300 gap-1">
                               <Crown className="h-3 w-3" />
@@ -149,19 +180,14 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                           )}
                         </TableCell>
                         <TableCell>
-                          {player.mod && (Array.isArray(player.mod) ? player.mod.length > 0 : Boolean(player.mod)) ? (
+                          {parseJsonArray(player.mod) ? (
                             <Badge className="bg-blue-500/20 text-blue-300 gap-1">
                               <Zap className="h-3 w-3" />
-                              {Array.isArray(player.mod) ? JSON.stringify(player.mod) : String(player.mod)}
+                              {JSON.stringify(parseJsonArray(player.mod))}
                             </Badge>
                           ) : (
                             <Badge variant="secondary">Inativo</Badge>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={player.loggedin === 1 ? "default" : "secondary"}>
-                            {player.loggedin === 1 ? "Online" : "Offline"}
-                          </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -209,9 +235,15 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                           <div className="font-medium mb-1">{player.name}</div>
                           <div className="text-sm text-muted-foreground">ID: {player.id}</div>
                         </div>
-                        <Badge variant={player.loggedin === 1 ? "default" : "secondary"}>
-                          {player.loggedin === 1 ? "Online" : "Offline"}
-                        </Badge>
+                        {(() => {
+                          const cargo = getPlayerCargo(player)
+                          return (
+                            <Badge className={`gap-1 ${cargo.color}`}>
+                              {cargo.icon}
+                              {cargo.label}
+                            </Badge>
+                          )
+                        })()}
                       </div>
 
                       <div className="space-y-2 mb-3">
@@ -229,9 +261,9 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                         </div>
                         <div className="text-sm">
                           <strong>Mod:</strong>{" "}
-                          {player.mod && (Array.isArray(player.mod) ? player.mod.length > 0 : Boolean(player.mod)) ? (
+                          {parseJsonArray(player.mod) ? (
                             <Badge className="ml-1 bg-blue-500/20 text-blue-300">
-                              {Array.isArray(player.mod) ? JSON.stringify(player.mod) : String(player.mod)}
+                              {JSON.stringify(parseJsonArray(player.mod))}
                             </Badge>
                           ) : (
                             <Badge className="ml-1" variant="secondary">

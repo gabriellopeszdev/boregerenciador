@@ -21,7 +21,8 @@ export const config = {
    * - api, _next/static, _next/image (arquivos internos)
    * - _vercel (analytics que está dando erro de MIME)
    * - favicon.ico e logobore.png (arquivos na raiz da pasta public)
+   * - docs/public (documentação pública da API)
    */
-  '/((?!api|_next/static|_next/image|_vercel|favicon.ico|logobore.png|login|$).*)',
+  '/((?!api|_next/static|_next/image|_vercel|favicon.ico|logobore.png|login|docs/public|$).*)',
 ],
 }

@@ -57,7 +57,7 @@ export async function PUT(
     const encryptedPassword = await encryptPassword(newPassword)
 
     // Atualizar a senha
-    updatePlayerPassword(playerId, encryptedPassword)
+    await updatePlayerPassword(playerId, encryptedPassword)
 
     return Response.json({
       message: "Senha alterada com sucesso",

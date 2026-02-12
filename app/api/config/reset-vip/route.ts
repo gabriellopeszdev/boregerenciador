@@ -16,7 +16,7 @@ export async function POST() {
       return NextResponse.json({ error: "Sem permissão (apenas CEO)" }, { status: 403 })
     }
 
-    resetAllVip()
+    await resetAllVip()
     console.log('[api/config/reset-vip] Todos os VIPs foram resetados para 0')
 
     return NextResponse.json({ success: true, message: 'Todos os VIPs foram resetados para 0' })

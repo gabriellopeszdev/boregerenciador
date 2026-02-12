@@ -115,7 +115,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main content */}
       <main className="flex-1 min-w-0 overflow-y-auto">
-        <div className="p-6 pt-20 lg:pt-4">{children}</div>
+        <div className="p-6 pt-20 lg:pt-4 h-full">{children}</div>
       </main>
 
       {/* Mobile overlay */}

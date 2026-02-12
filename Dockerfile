@@ -2,10 +2,18 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-COPY package*.json ./
+# Desabilita telemetry do Next.js
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package.json package-lock.json* ./
+
+# Remove pnpm-lock.yaml se existir para usar npm
+RUN rm -f pnpm-lock.yaml && npm cache clean --force
+
 RUN npm install
 
 COPY . .
+
 RUN npm run build
 
 # Stage 2: Production

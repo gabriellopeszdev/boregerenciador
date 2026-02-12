@@ -46,7 +46,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
 
       console.log(`[api/players/[id]/mod] Adicionando Mod ao jogador ${playerId} nas salas ${rooms}`)
-      setPlayerMod(playerId, rooms)
+      await setPlayerMod(playerId, rooms)
     } else {
       const target = await getPlayerById(playerId)
       if (!target) {
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
 
       console.log(`[api/players/[id]/mod] Removendo Mod do jogador ${playerId}`)
-      removePlayerMod(playerId)
+      await removePlayerMod(playerId)
     }
 
     console.log(`[api/players/[id]/mod] Mod ${action === "add" ? "adicionado" : "removido"} com sucesso`)

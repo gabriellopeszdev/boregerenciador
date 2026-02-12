@@ -10,11 +10,11 @@ export interface Player {
   name: string
   password: string | null
   loggedin: number
-  ceo: number
+  dono: number
   diretor: number
-  admin: number[] | null
-  gerente: number[] | null
-  mod: number[] | null
+  admin: number[] | string | null
+  gerente: number[] | string | null
+  mod: number[] | string | null
   campAdmin: number
   prof: number
   vip?: number
@@ -82,7 +82,7 @@ function isNonEmptyArray(value: any): value is any[] {
 }
 
 export function hasPermission(player: Player): boolean {
-  if (player.ceo === 1 || player.diretor === 1) {
+  if (player.dono === 1 || player.diretor === 1) {
     return true
   }
 
@@ -90,7 +90,7 @@ export function hasPermission(player: Player): boolean {
 }
 
 export function getPlayerRole(player: Player): UserRole | null {
-  if (player.ceo === 1) return "ceo"
+  if (player.dono === 1) return "ceo"
   if (player.diretor === 1) return "diretor"
   if (isNonEmptyArray(player.admin)) return "admin"
   if (isNonEmptyArray(player.gerente)) return "gerente"

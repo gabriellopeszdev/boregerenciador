@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
 
       console.log(`[api/players/[id]/legend] Setando vip=${vipLevel} ao jogador ${playerId} até ${expirationDate}`)
-      setPlayerLegend(playerId, vipLevel, expirationDate)
+      await setPlayerLegend(playerId, vipLevel, expirationDate)
     } else {
       const target = await getPlayerById(playerId)
       if (!target) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
 
       console.log(`[api/players/[id]/legend] Removendo Legend do jogador ${playerId}`)
-      removePlayerLegend(playerId)
+      await removePlayerLegend(playerId)
     }
 
     console.log(`[api/players/[id]/legend] Legend ${action === "add" ? "adicionado" : "removido"} com sucesso`)

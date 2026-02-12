@@ -40,7 +40,7 @@ export default function SocketStatusPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-[#23272f] p-8">
+    <div className="p-4">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-primary">Socket.IO Status</h1>
 
