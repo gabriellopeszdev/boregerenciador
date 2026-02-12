@@ -213,9 +213,6 @@ function emitToGame(event: string, data: any): void {
   const io = getServerIO()
   if (io) {
     io.emit(event, data)
-    console.log(`[queries] Emitindo ${event} via socket.io`)
-  } else {
-    console.warn(`[queries] Socket.io não disponível para emitir ${event}`)
   }
 }
 
@@ -258,7 +255,6 @@ export async function setPlayerLegend(playerId: number, vipLevel: number, expira
     "UPDATE players SET vip = ?, expired_vip = ? WHERE id = ?",
     [vipLevel, expirationDate, playerId]
   )
-  console.log(`[queries] DB atualizado: player ${playerId} vip=${vipLevel}, expired_vip=${expirationDate}`)
   emitToGame("command:setLegend", { playerId, vipLevel, expirationDate })
 }
 
@@ -267,7 +263,6 @@ export async function removePlayerLegend(playerId: number): Promise<void> {
     "UPDATE players SET vip = 0, expired_vip = NULL WHERE id = ?",
     [playerId]
   )
-  console.log(`[queries] DB atualizado: player ${playerId} vip removido`)
   emitToGame("command:removeLegend", { playerId })
 }
 
@@ -277,7 +272,6 @@ export async function setPlayerMod(playerId: number, rooms: number[]): Promise<v
     "UPDATE players SET `mod` = ? WHERE id = ?",
     [roomsJson, playerId]
   )
-  console.log(`[queries] DB atualizado: player ${playerId} mod=${roomsJson}`)
   emitToGame("command:setMod", { playerId, rooms })
 }
 
@@ -286,7 +280,6 @@ export async function removePlayerMod(playerId: number): Promise<void> {
     "UPDATE players SET `mod` = NULL WHERE id = ?",
     [playerId]
   )
-  console.log(`[queries] DB atualizado: player ${playerId} mod removido`)
   emitToGame("command:removeMod", { playerId })
 }
 
@@ -295,7 +288,6 @@ export async function resetAllVip(): Promise<void> {
     "UPDATE players SET vip = 0, expired_vip = NULL WHERE vip > 0",
     []
   )
-  console.log(`[queries] DB atualizado: todos os VIPs resetados`)
   emitToGame("command:resetAllVip", {})
 }
 
@@ -304,6 +296,5 @@ export async function updatePlayerPassword(playerId: number, hashedPassword: str
     "UPDATE players SET password = ? WHERE id = ?",
     [hashedPassword, playerId]
   )
-  console.log(`[queries] DB atualizado: password do player ${playerId} alterada`)
   emitToGame("command:changePassword", { playerId, hashedPassword })
 }

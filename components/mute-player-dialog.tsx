@@ -54,7 +54,6 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
   const handleMute = async () => {
     if (!player || !reason.trim() || !muteTime) return
 
-    console.log(`[mute-dialog] Mutando jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch("/api/mutes", {
@@ -73,7 +72,6 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
       })
 
       if (response.ok) {
-        console.log(`[mute-dialog] Mute criado com sucesso para ${player.name}`)
         toast({
           title: "✅ Sucesso!",
           description: `${player.name} foi mutado com sucesso.`,
@@ -83,7 +81,6 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
           router.refresh()
         }, 1500)
       } else {
-        console.warn(`[mute-dialog] Falha ao mutar ${player.name}: ${response.status}`)
         toast({
           title: "❌ Erro!",
           description: `Falha ao mutar ${player.name}. Tente novamente.`,

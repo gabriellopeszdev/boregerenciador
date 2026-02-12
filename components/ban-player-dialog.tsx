@@ -54,7 +54,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
   const handleBan = async () => {
     if (!player || !reason.trim()) return
 
-    console.log(`[ban-dialog] Banindo jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch("/api/bans", {
@@ -73,7 +72,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
       })
 
       if (response.ok) {
-        console.log(`[ban-dialog] Ban criado com sucesso para ${player.name}`)
         toast({
           title: "✅ Sucesso!",
           description: `${player.name} foi banido com sucesso.`,
@@ -87,7 +85,6 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
           router.refresh()
         }, 1500)
       } else {
-        console.warn(`[ban-dialog] Falha ao banir ${player.name}: ${response.status}`)
         toast({
           title: "❌ Erro!",
           description: `Falha ao banir ${player.name}. Tente novamente.`,

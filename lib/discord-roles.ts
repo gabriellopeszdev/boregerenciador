@@ -28,7 +28,6 @@ export async function getUserRoles(): Promise<UserRoles> {
     const now = Date.now()
     
     if (cached && (now - cached.timestamp < CACHE_DURATION)) {
-      console.log(`[discord-roles] Usando cache de memória para: ${session.user.name}`)
       return cached.data
     }
 
@@ -45,7 +44,6 @@ export async function getUserRoles(): Promise<UserRoles> {
     }
 
     // 2. SE NÃO TIVER CACHE, CHAMA A API
-    console.log(`[discord-roles] Buscando dados frescos na API do Discord...`)
     const response = await fetch(
       `https://discord.com/api/v10/users/@me/guilds/${guildId}/member`,
       {

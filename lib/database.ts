@@ -21,7 +21,6 @@ export function getPool() {
   if (global.__MYSQL_POOL__) return global.__MYSQL_POOL__
 
   const pool = mysql.createPool(dbConfig)
-  console.log(`[db] Pool criado (conexões: ${dbConfig.connectionLimit}, timeout: ${dbConfig.idleTimeout}ms)`)
   
   global.__MYSQL_POOL__ = pool
   return pool

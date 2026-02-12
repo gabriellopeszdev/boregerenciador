@@ -48,13 +48,10 @@ export function BansTable() {
         searchTerm: searchTerm,
       })
 
-      console.log(`[bans-table] Buscando bans - página ${currentPage}, busca: "${searchTerm}"`)
-
       const response = await fetch(`/api/bans?${params}`)
       if (!response.ok) throw new Error("Falha ao buscar bans")
 
       const data: BanPaginationResponse = await response.json()
-      console.log(`[bans-table] Recebido ${data.data.length} bans de ${data.pagination.total}`)
       
       setBans(data.data)
       setPagination(data.pagination)
@@ -73,14 +70,11 @@ export function BansTable() {
   const handleUnban = async (banId: number, banName: string) => {
     setUnbanLoading(banId)
     try {
-      console.log(`[bans-table] Removendo ban ${banId} de ${banName}`)
-
       const response = await fetch(`/api/bans/${banId}/unban`, {
         method: "POST",
       })
 
       if (response.ok) {
-        console.log(`[bans-table] Ban removido com sucesso`)
         toast({
           title: "✅ Sucesso!",
           description: `O ban de ${banName} foi removido com sucesso.`,
@@ -89,7 +83,6 @@ export function BansTable() {
           fetchBans()
         }, 1500)
       } else {
-        console.warn(`[bans-table] Falha ao remover ban: ${response.status}`)
         toast({
           title: "❌ Erro!",
           description: `Falha ao remover o ban de ${banName}.`,

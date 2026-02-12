@@ -31,7 +31,6 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
   const handleAddMod = async () => {
     if (!player || !rooms.trim()) return
 
-    console.log(`[mod-dialog] Adicionando mod ao jogador ${player.name}`)
     setLoading(true)
     try {
       const roomsArray = rooms.split(",").map(r => Number.parseInt(r.trim())).filter(r => !isNaN(r))
@@ -58,7 +57,6 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
       })
 
       if (response.ok) {
-        console.log(`[mod-dialog] Mod adicionado com sucesso para ${player.name}`)
         toast({
           title: "✅ Sucesso!",
           description: `${player.name} agora é Mod nas salas ${roomsArray.join(", ")}.`,
@@ -70,7 +68,6 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
         }, 1500)
       } else {
         const data = await response.json()
-        console.warn(`[mod-dialog] Falha: ${response.status}`, data.error)
         toast({
           title: "❌ Erro!",
           description: data.error || "Falha ao adicionar mod.",
@@ -92,7 +89,6 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
   const handleRemoveMod = async () => {
     if (!player) return
 
-    console.log(`[mod-dialog] Removendo mod do jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch(`/api/players/${player.id}/mod`, {
@@ -106,7 +102,6 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
       })
 
       if (response.ok) {
-        console.log(`[mod-dialog] Mod removido com sucesso de ${player.name}`)
         toast({
           title: "✅ Sucesso!",
           description: `Mod removido de ${player.name}.`,
@@ -118,7 +113,6 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
         }, 1500)
       } else {
         const data = await response.json()
-        console.warn(`[mod-dialog] Falha: ${response.status}`, data.error)
         toast({
           title: "❌ Erro!",
           description: data.error || "Falha ao remover mod.",

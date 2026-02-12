@@ -23,24 +23,12 @@ app.prepare().then(() => {
   global.io = io;
 
   io.on('connection', (socket) => {
-    console.log(`[socket.io] Cliente conectado: ${socket.id}`);
-
-    // Sync events (log only, data from MySQL)
-    socket.on('sync:players', (data) => {
-      console.log(`[socket.io] Players: ${data?.length || 0}`);
-    });
-    socket.on('sync:bans', (data) => {
-      console.log(`[socket.io] Bans: ${data?.length || 0}`);
-    });
-    socket.on('sync:mutes', (data) => {
-      console.log(`[socket.io] Mutes: ${data?.length || 0}`);
-    });
-    socket.on('sync:stats', (data) => {
-      console.log(`[socket.io] Stats sincronizados`);
-    });
-    socket.on('sync:recs', (data) => {
-      console.log(`[socket.io] Recs: ${data?.length || 0}`);
-    });
+    // Sync events (data from MySQL, no logging needed)
+    socket.on('sync:players', () => {});
+    socket.on('sync:bans', () => {});
+    socket.on('sync:mutes', () => {});
+    socket.on('sync:stats', () => {});
+    socket.on('sync:recs', () => {});
 
     // Action events (emit to game)
     socket.on('action:ban', (data, callback) => {
@@ -72,14 +60,11 @@ app.prepare().then(() => {
       if (callback) callback({ success: true });
     });
 
-    socket.on('disconnect', (reason) => {
-      console.log(`[socket.io] Cliente desconectado: ${socket.id} (${reason})`);
-    });
+    socket.on('disconnect', () => {});
   });
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
-    console.log(`> Socket.IO path: /api/socketio`);
   });
 });
 

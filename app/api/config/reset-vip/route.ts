@@ -17,7 +17,6 @@ export async function POST() {
     }
 
     await resetAllVip()
-    console.log('[api/config/reset-vip] Todos os VIPs foram resetados para 0')
 
     return NextResponse.json({ success: true, message: 'Todos os VIPs foram resetados para 0' })
   } catch (error) {

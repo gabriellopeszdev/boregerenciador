@@ -23,23 +23,6 @@ export default async function DashboardPage() {
     gerente: userRoles.isGerente ? [1] : null,
   }
 
-  // DEBUG: logar sessão e permissão no servidor para investigação
-  try {
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/page] session (server):', {
-      user: session?.user?.name ?? null,
-      id: session?.user?.id ?? null,
-      accessToken: (session as any)?.accessToken ?? null,
-    })
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/page] hasPermission:', hasPermission)
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/page] userRoles:', userRoles)
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('[dashboard/page] erro ao logar debug:', err)
-  }
-
   return (
     <main className="flex flex-col items-center justify-start py-4 px-2">
       <div className="w-full max-w-6xl mx-auto flex flex-col items-center mb-4">

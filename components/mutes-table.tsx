@@ -58,13 +58,10 @@ export function MutesTable() {
         searchTerm: searchTerm,
       })
 
-      console.log(`[mutes-table] Buscando mutes - página ${currentPage}, busca: "${searchTerm}"`)
-
       const response = await fetch(`/api/mutes?${params}`)
       if (!response.ok) throw new Error("Falha ao buscar mutes")
 
       const data: MutePaginationResponse = await response.json()
-      console.log(`[mutes-table] Recebido ${data.data.length} mutes de ${data.pagination.total}`)
       
       setMutes(data.data)
       setPagination(data.pagination)
@@ -83,14 +80,11 @@ export function MutesTable() {
   const handleUnmute = async (muteId: number, muteName: string) => {
     setUnmuteLoading(muteId)
     try {
-      console.log(`[mutes-table] Removendo mute ${muteId} de ${muteName}`)
-
       const response = await fetch(`/api/mutes/${muteId}/unmute`, {
         method: "POST",
       })
 
       if (response.ok) {
-        console.log(`[mutes-table] Mute removido com sucesso`)
         toast({
           title: "✅ Sucesso!",
           description: `O mute de ${muteName} foi removido com sucesso.`,
@@ -99,7 +93,6 @@ export function MutesTable() {
           fetchMutes()
         }, 1500)
       } else {
-        console.warn(`[mutes-table] Falha ao remover mute: ${response.status}`)
         toast({
           title: "❌ Erro!",
           description: `Falha ao remover o mute de ${muteName}.`,

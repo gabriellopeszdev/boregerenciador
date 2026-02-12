@@ -32,7 +32,6 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
   const handleAddLegend = async () => {
     if (!player || !expirationDate) return
 
-    console.log(`[legend-dialog] Adicionando legend ao jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch(`/api/players/${player.id}/legend`, {
@@ -48,7 +47,6 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
       })
 
       if (response.ok) {
-        console.log(`[legend-dialog] Legend adicionado com sucesso para ${player.name}`)
         toast({
           title: "✅ Sucesso!",
           description: `${player.name} agora tem vip=${vipLevel} até ${expirationDate}.`,
@@ -60,7 +58,6 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
         }, 1500)
       } else {
         const data = await response.json()
-        console.warn(`[legend-dialog] Falha: ${response.status}`, data.error)
         toast({
           title: "❌ Erro!",
           description: data.error || "Falha ao adicionar legend.",
@@ -82,7 +79,6 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
   const handleRemoveLegend = async () => {
     if (!player) return
 
-    console.log(`[legend-dialog] Removendo legend do jogador ${player.name}`)
     setLoading(true)
     try {
       const response = await fetch(`/api/players/${player.id}/legend`, {
@@ -96,7 +92,6 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
       })
 
       if (response.ok) {
-        console.log(`[legend-dialog] Legend removido com sucesso de ${player.name}`)
         toast({
           title: "✅ Sucesso!",
           description: `Legend removido de ${player.name}.`,
@@ -108,7 +103,6 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
         }, 1500)
       } else {
         const data = await response.json()
-        console.warn(`[legend-dialog] Falha: ${response.status}`, data.error)
         toast({
           title: "❌ Erro!",
           description: data.error || "Falha ao remover legend.",

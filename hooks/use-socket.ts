@@ -43,18 +43,15 @@ export function useSocket(options: UseSocketOptions = {}) {
     const handleConnect = () => {
       setStatus("connected")
       setError(null)
-      console.log("[useSocket] Conectado:", socket.id)
     }
 
-    const handleDisconnect = (reason: string) => {
+    const handleDisconnect = () => {
       setStatus("disconnected")
-      console.log("[useSocket] Desconectado:", reason)
     }
 
     const handleConnectError = (err: Error) => {
       setStatus("error")
       setError(err)
-      console.error("[useSocket] Erro de conexão:", err.message)
     }
 
     socket.on("connect", handleConnect)
@@ -107,7 +104,6 @@ export function usePlayersRealtime(initialPlayers: any[] = []) {
     if (!socket) return
 
     const handleUpdate = (data: any[]) => {
-      console.log("[usePlayersRealtime] Atualização recebida:", data.length)
       setPlayers(data)
     }
 
@@ -130,7 +126,6 @@ export function useBansRealtime(initialBans: any[] = []) {
     if (!socket) return
 
     const handleUpdate = (data: any[]) => {
-      console.log("[useBansRealtime] Atualização recebida:", data.length)
       setBans(data)
     }
 
@@ -153,7 +148,6 @@ export function useMutesRealtime(initialMutes: any[] = []) {
     if (!socket) return
 
     const handleUpdate = (data: any[]) => {
-      console.log("[useMutesRealtime] Atualização recebida:", data.length)
       setMutes(data)
     }
 
@@ -176,7 +170,6 @@ export function useStatsRealtime(initialStats: any = {}) {
     if (!socket) return
 
     const handleUpdate = (data: any) => {
-      console.log("[useStatsRealtime] Atualização recebida")
       setStats(data)
     }
 

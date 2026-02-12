@@ -25,17 +25,11 @@ export function getClientSocket(): Socket {
       reconnectionDelay: 1000,
     });
 
-    clientSocket.on("connect", () => {
-      console.log("[socket.io client] Conectado:", clientSocket?.id);
-    });
+    clientSocket.on("connect", () => {});
 
-    clientSocket.on("disconnect", (reason) => {
-      console.log("[socket.io client] Desconectado:", reason);
-    });
+    clientSocket.on("disconnect", () => {});
 
-    clientSocket.on("connect_error", (error) => {
-      console.error("[socket.io client] Erro de conexão:", error.message);
-    });
+    clientSocket.on("connect_error", () => {});
   }
 
   return clientSocket;

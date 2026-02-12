@@ -15,7 +15,6 @@ export default function SocketStatusPage() {
     socket.on('connect', () => {
       setIsConnected(true);
       setSocketId(socket.id || null);
-      console.log('Cliente conectado ao Socket.io:', socket.id);
     });
 
     socket.on('disconnect', () => {

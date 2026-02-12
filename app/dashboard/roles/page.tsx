@@ -17,15 +17,6 @@ export default async function RolesPage() {
     redirect("/dashboard")
   }
 
-  // DEBUG: logar sessão e permissão no servidor para investigação
-  try {
-    // eslint-disable-next-line no-console
-    console.log('[dashboard/roles/page] hasPermission (server):', hasPermission)
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('[dashboard/roles/page] erro ao logar debug:', err)
-  }
-
   return (
     <main className="flex flex-col items-center justify-start py-4 px-2">
       <div className="w-full max-w-5xl flex flex-col items-center mb-4">

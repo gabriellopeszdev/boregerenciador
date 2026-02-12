@@ -42,13 +42,10 @@ export function RolesTable({ currentUser }: RolesTableProps) {
         searchTerm: searchTerm,
       })
 
-      console.log(`[roles-table] Buscando players - página ${currentPage}, busca: "${searchTerm}"`)
-
       const response = await fetch(`${API_URL}?${params}`)
       if (!response.ok) throw new Error("Failed to fetch players")
 
       const data = await response.json()
-      console.log(`[roles-table] Recebido ${data.players.length} de ${data.totalCount} players`)
       
       setPlayers(data.players)
       setTotalCount(data.totalCount)
