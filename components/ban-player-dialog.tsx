@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Ban } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface BanPlayerDialogProps {
   player: Player | null
@@ -56,41 +57,32 @@ export function BanPlayerDialog({ player, open, onOpenChange, currentUser }: Ban
 
     setLoading(true)
     try {
-      const response = await fetch("/api/bans", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      await apiClient.post("/api/bans", {
           name: player.name,
           reason: reason.trim(),
           conn: conn.trim(),
           ipv4: ipv4.trim(),
           room: parseInt(room) || 0,
           time: banTime,
-        }),
-      })
+        }, {
+          headers: {
+            "x-staff-name": currentUser?.name || "Sistema",
+          },
+        }
+      )
 
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `${player.name} foi banido com sucesso.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setReason("")
-          setConn("")
-          setIpv4("")
-          setRoom("1")
-          router.refresh()
-        }, 1500)
-      } else {
-        toast({
-          title: "❌ Erro!",
-          description: `Falha ao banir ${player.name}. Tente novamente.`,
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `${player.name} foi banido com sucesso.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        setReason("")
+        setConn("")
+        setIpv4("")
+        setRoom("1")
+        router.refresh()
+      }, 1500)
     } catch (error) {
       console.error(`[ban-dialog] Erro ao banir ${player.name}:`, error)
       toast({

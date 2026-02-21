@@ -13,6 +13,7 @@ import { BanPlayerDialog } from "./ban-player-dialog"
 import { MutePlayerDialog } from "./mute-player-dialog"
 import { ChangePasswordDialog } from "./change-password-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { apiClient } from "@/lib/api-client"
 
 const API_URL = "/api/players";
 const PLAYERS_PER_PAGE = 10;
@@ -36,11 +37,8 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
     async function fetchPlayers() {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_URL}?page=${currentPage}&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch players");
-        }
-        const data = await response.json();
+        const response = await apiClient.get(`${API_URL}?page=${currentPage}&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
+        const data = response.data
         setPlayers(data.players);
         setTotalCount(data.totalCount);
       } catch (error) {
@@ -303,12 +301,12 @@ const canChangePassword = (user: any) => {
         onPasswordChanged={() => {
           setCurrentPage(1)
           setTimeout(() => {
-            fetch(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
-              .then(r => r.json())
-              .then(data => {
-                setPlayers(data.players)
-                setTotalCount(data.totalCount)
-              })
+            ;(async () => {
+              const response = await apiClient.get(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
+              const data = response.data as { players: Player[]; totalCount: number }
+              setPlayers(data.players)
+              setTotalCount(data.totalCount)
+            })()
           }, 500)
         }}
       />

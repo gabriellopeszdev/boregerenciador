@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Crown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface LegendPlayerDialogProps {
   player: Player | null
@@ -26,101 +27,66 @@ interface LegendPlayerDialogProps {
 export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: LegendPlayerDialogProps) {
   const [rooms, setRooms] = useState<string>("1")
   const [expirationDate, setExpirationDate] = useState<string>("")
-  const [vipLevel, setVipLevel] = useState<number>(4)
+  const [tipo, setTipo] = useState<number>(4)
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
   const handleAddLegend = async () => {
-    if (!player || !expirationDate) return
+    if (!player || !expirationDate) return;
 
-    console.log(`[legend-dialog] Adicionando legend ao jogador ${player.name}`)
-    setLoading(true)
+    setLoading(true);
     try {
-      const roomsArray = rooms.split(",").map(r => Number.parseInt(r.trim())).filter(r => !isNaN(r))
-      
-      const response = await fetch(`/api/players/${player.id}/legend`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "add",
-          vipLevel,
-          rooms: roomsArray,
-          expirationDate,
-        }),
-      })
+      // Payload final: apenas 'tipo' e 'expiresAt'
+      const payload = {
+        action: "add",
+        tipo,
+        expiresAt: expirationDate,
+      };
+      await apiClient.post(`/api/players/${player.id}/legend`, payload);
 
-      if (response.ok) {
-        console.log(`[legend-dialog] Legend adicionado com sucesso para ${player.name}`)
-        toast({
-          title: "✅ Sucesso!",
-          description: `${player.name} agora tem vip=${vipLevel} até ${expirationDate}.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setRooms("1")
-          setExpirationDate("")
-          onSuccess?.()
-        }, 1500)
-      } else {
-        const data = await response.json()
-        console.warn(`[legend-dialog] Falha: ${response.status}`, data.error)
-        toast({
-          title: "❌ Erro!",
-          description: data.error || "Falha ao adicionar legend.",
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `${player.name} agora tem tipo=${tipo} até ${expirationDate}.`,
+      });
+      setTimeout(() => {
+        onOpenChange(false);
+        setRooms("1");
+        setExpirationDate("");
+        onSuccess?.();
+      }, 1500);
     } catch (error) {
-      console.error("[legend-dialog] Erro:", error)
+      console.error("[legend-dialog] Erro:", error);
       toast({
         title: "❌ Erro!",
         description: "Erro ao tentar adicionar legend.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   const handleRemoveLegend = async () => {
     if (!player) return
 
-    console.log(`[legend-dialog] Removendo legend do jogador ${player.name}`)
     setLoading(true)
     try {
-      const response = await fetch(`/api/players/${player.id}/legend`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "remove",
-        }),
+      // Payload final: apenas 'tipo'
+      await apiClient.post(`/api/players/${player.id}/legend`, {
+        action: "remove",
+        tipo,
       })
 
-      if (response.ok) {
-        console.log(`[legend-dialog] Legend removido com sucesso de ${player.name}`)
-        toast({
-          title: "✅ Sucesso!",
-          description: `Legend removido de ${player.name}.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setRooms("1")
-          setExpirationDate("")
-          onSuccess?.()
-        }, 1500)
-      } else {
-        const data = await response.json()
-        console.warn(`[legend-dialog] Falha: ${response.status}`, data.error)
-        toast({
-          title: "❌ Erro!",
-          description: data.error || "Falha ao remover legend.",
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `Legend removido de ${player.name}.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        setRooms("1")
+        setExpirationDate("")
+        onSuccess?.()
+      }, 1500)
     } catch (error) {
       console.error("[legend-dialog] Erro:", error)
       toast({
@@ -170,11 +136,11 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="vipLevel">Tipo</Label>
+            <Label htmlFor="tipo">Tipo</Label>
             <select
-              id="vipLevel"
-              value={vipLevel}
-              onChange={(e) => setVipLevel(Number(e.target.value))}
+              id="tipo"
+              value={tipo}
+              onChange={(e) => setTipo(Number(e.target.value))}
               className="w-full rounded border bg-background p-2"
               disabled={loading}
             >

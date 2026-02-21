@@ -23,10 +23,10 @@ export const authOptions: AuthOptions = {
       // Verifica se o usuário faz parte do Staff para permitir o LOGIN inicial
       if (account?.provider === "discord") {
         try {
-          const guildId = process.env.DISCORD_GUILD_ID
-          const requiredRoleId = process.env.DISCORD_STAFF_ROLE_ID
+          const guildId = process.env.DISCORD_GUILD_ID;
+          const requiredRoleId = process.env.DISCORD_STAFF_ROLE_ID;
 
-          if (!guildId || !requiredRoleId) return false
+          if (!guildId || !requiredRoleId) return false;
 
           const response = await fetch(
             `https://discord.com/api/v10/users/@me/guilds/${guildId}/member`,
@@ -34,18 +34,21 @@ export const authOptions: AuthOptions = {
               headers: { Authorization: `Bearer ${account.access_token}` },
               cache: 'no-store' // Evita cache antigo no login
             }
-          )
+          );
 
-          if (!response.ok) return false
+          if (!response.ok) {
+            const errorText = await response.text();
+            return false;
+          }
 
-          const member = await response.json()
-          return member.roles.includes(requiredRoleId)
+          const member = await response.json();
+          return member.roles && member.roles.includes(requiredRoleId);
         } catch (error) {
-          console.error("Erro no signIn:", error)
-          return false
+          console.error("Erro no signIn:", error);
+          return false;
         }
       }
-      return false
+      return false;
     },
     async jwt({ token, account }) {
       // Salva o token do Discord no JWT

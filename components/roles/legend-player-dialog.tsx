@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Crown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface LegendPlayerDialogProps {
   player: Player | null
@@ -25,7 +26,7 @@ interface LegendPlayerDialogProps {
 
 export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: LegendPlayerDialogProps) {
   const [expirationDate, setExpirationDate] = useState<string>("")
-  const [vipLevel, setVipLevel] = useState<number>(4)
+  const [tipo, setTipo] = useState<number>(4)
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
@@ -34,36 +35,21 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
 
     setLoading(true)
     try {
-      const response = await fetch(`/api/players/${player.id}/legend`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "add",
-          vipLevel,
-          expirationDate,
-        }),
+      await apiClient.post(`/api/players/${player.id}/legend`, {
+        action: "add",
+        tipo,
+        expiresAt: expirationDate,
       })
 
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `${player.name} agora tem vip=${vipLevel} até ${expirationDate}.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setExpirationDate("")
-          onSuccess?.()
-        }, 1500)
-      } else {
-        const data = await response.json()
-        toast({
-          title: "❌ Erro!",
-          description: data.error || "Falha ao adicionar legend.",
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `${player.name} agora tem tipo=${tipo} até ${expirationDate}.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        setExpirationDate("")
+        onSuccess?.()
+      }, 1500)
     } catch (error) {
       console.error("[legend-dialog] Erro:", error)
       toast({
@@ -81,34 +67,20 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
 
     setLoading(true)
     try {
-      const response = await fetch(`/api/players/${player.id}/legend`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "remove",
-        }),
+      await apiClient.post(`/api/players/${player.id}/legend`, {
+        action: "remove",
+        tipo,
       })
 
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `Legend removido de ${player.name}.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setExpirationDate("")
-          onSuccess?.()
-        }, 1500)
-      } else {
-        const data = await response.json()
-        toast({
-          title: "❌ Erro!",
-          description: data.error || "Falha ao remover legend.",
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `Legend removido de ${player.name}.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        setExpirationDate("")
+        onSuccess?.()
+      }, 1500)
     } catch (error) {
       console.error("[legend-dialog] Erro:", error)
       toast({
@@ -147,11 +119,11 @@ export function LegendPlayerDialog({ player, open, onOpenChange, onSuccess }: Le
           </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vipLevel">Tipo</Label>
+              <Label htmlFor="tipo">Tipo</Label>
               <select
-                id="vipLevel"
-                value={vipLevel}
-                onChange={(e) => setVipLevel(Number(e.target.value))}
+                id="tipo"
+                value={tipo}
+                onChange={(e) => setTipo(Number(e.target.value))}
                 className="w-full rounded border bg-background p-2"
                 disabled={loading}
               >

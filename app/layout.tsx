@@ -12,6 +12,9 @@ import VhFix from "@/components/vh-fix"
 export const metadata: Metadata = {
   title: "Bore Admin Painel",
   description: "Sistema de moderação para Bore",
+  icons: {
+    icon: "/logo_bore.ico",
+  },
 }
 
 export default function RootLayout({

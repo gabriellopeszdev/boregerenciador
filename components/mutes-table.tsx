@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface MutePaginationResponse {
   data: Mute[]
@@ -58,10 +59,8 @@ export function MutesTable() {
         searchTerm: searchTerm,
       })
 
-      const response = await fetch(`/api/mutes?${params}`)
-      if (!response.ok) throw new Error("Falha ao buscar mutes")
-
-      const data: MutePaginationResponse = await response.json()
+      const response = await apiClient.get<MutePaginationResponse>(`/api/mutes?${params}`)
+      const data = response.data
       
       setMutes(data.data)
       setPagination(data.pagination)
@@ -80,25 +79,14 @@ export function MutesTable() {
   const handleUnmute = async (muteId: number, muteName: string) => {
     setUnmuteLoading(muteId)
     try {
-      const response = await fetch(`/api/mutes/${muteId}/unmute`, {
-        method: "POST",
+      await apiClient.post(`/api/mutes/${muteId}/unmute`)
+      toast({
+        title: "✅ Sucesso!",
+        description: `O mute de ${muteName} foi removido com sucesso.`,
       })
-
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `O mute de ${muteName} foi removido com sucesso.`,
-        })
-        setTimeout(() => {
-          fetchMutes()
-        }, 1500)
-      } else {
-        toast({
-          title: "❌ Erro!",
-          description: `Falha ao remover o mute de ${muteName}.`,
-          variant: "destructive",
-        })
-      }
+      setTimeout(() => {
+        fetchMutes()
+      }, 1500)
     } catch (error) {
       console.error("[mutes-table] Erro ao desmutar:", error)
       toast({

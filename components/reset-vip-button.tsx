@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Crown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface Props {
   initialIsCeo?: boolean | null
@@ -19,9 +20,9 @@ export default function ResetVipButton({ initialIsCeo = null }: Props) {
   useEffect(() => {
     const check = async () => {
       try {
-        const resp = await fetch('/api/config/is-ceo')
-        if (resp.ok) {
-          const json = await resp.json()
+        const resp = await apiClient.get('/api/config/is-ceo')
+        if (resp.status === 200) {
+          const json = resp.data
           if (json.isCeo) {
             setIsCeo(true)
             return
@@ -30,13 +31,9 @@ export default function ResetVipButton({ initialIsCeo = null }: Props) {
 
         // fallback: if server doesn't confirm, POST client token so server can check Discord
         if (session?.accessToken) {
-          const postResp = await fetch('/api/config/is-ceo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: session.accessToken }),
-          })
-          if (postResp.ok) {
-            const json = await postResp.json()
+          const postResp = await apiClient.post('/api/config/is-ceo', { token: session.accessToken })
+          if (postResp.status === 200) {
+            const json = postResp.data
             setIsCeo(Boolean(json.isCeo))
             return
           }
@@ -60,9 +57,9 @@ export default function ResetVipButton({ initialIsCeo = null }: Props) {
 
     setLoading(true)
     try {
-      const resp = await fetch("/api/config/reset-vip", { method: "POST" })
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}))
+      const resp = await apiClient.post("/api/config/reset-vip", { token: session?.accessToken })
+      if (resp.status !== 200) {
+        const err = resp.data || {}
         toast({ title: "Erro ao resetar", description: err?.error || "Erro desconhecido", variant: "destructive" })
         setLoading(false)
         return

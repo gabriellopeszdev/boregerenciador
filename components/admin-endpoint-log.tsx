@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { RefreshCw, Database, BarChart3, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { apiClient } from "@/lib/api-client";
 
 function LogPanel({ endpoint, title, icon }: { endpoint: string; title: string; icon?: string }) {
   const [data, setData] = useState<any>(null);
@@ -14,9 +15,8 @@ function LogPanel({ endpoint, title, icon }: { endpoint: string; title: string; 
     else setLoading(true);
     setError(null);
     try {
-      const res = await fetch(endpoint);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const res = await apiClient.get(endpoint);
+      const json = res.data;
       setData(json);
       setLastFetch(new Date());
     } catch (err: any) {

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface ModPlayerDialogProps {
   player: Player | null
@@ -48,35 +49,21 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
         return
       }
 
-      const response = await fetch(`/api/players/${player.id}/mod`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      await apiClient.post(`/api/players/${player.id}/mod`, {
           action: "add",
           rooms: roomsArray,
-        }),
-      })
+        }
+      )
 
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `${player.name} agora é Mod nas salas ${roomsArray.join(", ")}.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setRooms("1")
-          onSuccess?.()
-        }, 1500)
-      } else {
-        const data = await response.json()
-        toast({
-          title: "❌ Erro!",
-          description: data.error || "Falha ao adicionar mod.",
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `${player.name} agora é Mod nas salas ${roomsArray.join(", ")}.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        setRooms("1")
+        onSuccess?.()
+      }, 1500)
     } catch (error) {
       console.error("[mod-dialog] Erro:", error)
       toast({
@@ -94,34 +81,20 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
 
     setLoading(true)
     try {
-      const response = await fetch(`/api/players/${player.id}/mod`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      await apiClient.post(`/api/players/${player.id}/mod`, {
           action: "remove",
-        }),
-      })
+        }
+      )
 
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `Mod removido de ${player.name}.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          setRooms("1")
-          onSuccess?.()
-        }, 1500)
-      } else {
-        const data = await response.json()
-        toast({
-          title: "❌ Erro!",
-          description: data.error || "Falha ao remover mod.",
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `Mod removido de ${player.name}.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        setRooms("1")
+        onSuccess?.()
+      }, 1500)
     } catch (error) {
       console.error("[mod-dialog] Erro:", error)
       toast({

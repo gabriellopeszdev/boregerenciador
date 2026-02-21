@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Crown } from "lucide-react"
+import { apiClient } from "@/lib/api-client"
 
 interface Props {
   initialCanManage?: boolean | null
@@ -18,9 +19,9 @@ export function RoleButtonClient({ initialCanManage = null }: Props) {
     const check = async () => {
       try {
         // Primeiro tentar GET (server-side DB-first)
-        const resp = await fetch('/api/config/can-manage')
-        if (resp.ok) {
-          const json = await resp.json()
+        const resp = await apiClient.get('/api/config/can-manage')
+        if (resp.status === 200) {
+          const json = resp.data
           if (json.canManage !== undefined) {
             setHasPermission(Boolean(json.canManage))
             // if true, we can stop
@@ -30,13 +31,9 @@ export function RoleButtonClient({ initialCanManage = null }: Props) {
 
         // Se server-side não conseguiu (ou false), e temos token no cliente, POST token para checar no servidor via Discord
         if (session?.accessToken) {
-          const postResp = await fetch('/api/config/can-manage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: session.accessToken }),
-          })
-          if (postResp.ok) {
-            const json = await postResp.json()
+          const postResp = await apiClient.post('/api/config/can-manage', { token: session.accessToken })
+          if (postResp.status === 200) {
+            const json = postResp.data
             setHasPermission(Boolean(json.canManage))
             return
           }

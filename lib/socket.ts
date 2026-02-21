@@ -1,11 +1,5 @@
 import { io as ioClient, Socket } from "socket.io-client";
-import type { Server } from "socket.io";
-
-// Tipos globais para o servidor
-declare global {
-  // eslint-disable-next-line no-var
-  var io: Server | undefined;
-}
+import { getSession } from "next-auth/react";
 
 // ===== CLIENTE SOCKET.IO (para uso no frontend) =====
 
@@ -13,13 +7,18 @@ let clientSocket: Socket | null = null;
 
 export function getClientSocket(): Socket {
   if (!clientSocket) {
-    const url = typeof window !== "undefined" 
-      ? window.location.origin 
-      : process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000";
+    const url = process.env.NEXT_PUBLIC_SOCKET_URL
+      || process.env.NEXT_PUBLIC_BACKEND_URL
+      || (typeof window !== "undefined" ? window.location.origin : "http://localhost:4000")
     
     clientSocket = ioClient(url, {
       path: "/api/socketio",
       transports: ["websocket", "polling"],
+      withCredentials: true,
+      auth: async (callback) => {
+        const session = await getSession()
+        callback({ token: session?.accessToken || "" })
+      },
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
@@ -40,10 +39,4 @@ export function disconnectClientSocket(): void {
     clientSocket.disconnect();
     clientSocket = null;
   }
-}
-
-// ===== HELPERS PARA O SERVIDOR (para uso nas API routes) =====
-
-export function getServerIO(): Server | undefined {
-  return global.io;
 }

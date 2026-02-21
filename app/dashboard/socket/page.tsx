@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getClientSocket } from '@/lib/socket';
+import { apiClient } from '@/lib/api-client';
 
 export default function SocketStatusPage() {
   const [isConnected, setIsConnected] = useState(false);
@@ -25,8 +26,8 @@ export default function SocketStatusPage() {
     // Fetch server status
     const fetchStatus = async () => {
       try {
-        const res = await fetch('/api/socket/status');
-        const data = await res.json();
+        const res = await apiClient.get('/api/socket/status');
+        const data = res.data;
         setServerStatus(data);
       } catch (error) {
         console.error('Erro ao buscar status:', error);
@@ -87,7 +88,7 @@ export default function SocketStatusPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Timestamp:</span>
-                <code className="bg-muted px-2 py-1 rounded text-sm text-xs">
+                <code className="bg-muted px-2 py-1 rounded text-xs">
                   {new Date(serverStatus.timestamp).toLocaleString()}
                 </code>
               </div>
@@ -106,7 +107,7 @@ export default function SocketStatusPage() {
           <pre className="bg-muted p-4 rounded overflow-x-auto text-sm mb-4">
 {`const io = require("socket.io-client");
 
-const socket = io("http://localhost:3000", {
+const socket = io("http://localhost:4000", {
   path: "/api/socketio",
   transports: ["websocket", "polling"],
 });
@@ -122,12 +123,9 @@ socket.on("command:ban", (data) => {
 });`}
           </pre>
 
-          <a
-            href="./WEBSOCKET_INTEGRATION.md"
-            className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded font-semibold hover:bg-primary/90 transition-all"
-          >
-            📖 Documentação Completa
-          </a>
+          <p className="text-sm text-muted-foreground">
+            Documentação consolidada no arquivo README.md da raiz do projeto.
+          </p>
         </div>
       </div>
     </div>

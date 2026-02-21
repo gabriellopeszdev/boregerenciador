@@ -14,6 +14,7 @@ import { format, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface BanPaginationResponse {
   data: Ban[]
@@ -48,10 +49,8 @@ export function BansTable() {
         searchTerm: searchTerm,
       })
 
-      const response = await fetch(`/api/bans?${params}`)
-      if (!response.ok) throw new Error("Falha ao buscar bans")
-
-      const data: BanPaginationResponse = await response.json()
+      const response = await apiClient.get<BanPaginationResponse>(`/api/bans?${params}`)
+      const data = response.data
       
       setBans(data.data)
       setPagination(data.pagination)
@@ -70,25 +69,14 @@ export function BansTable() {
   const handleUnban = async (banId: number, banName: string) => {
     setUnbanLoading(banId)
     try {
-      const response = await fetch(`/api/bans/${banId}/unban`, {
-        method: "POST",
+      await apiClient.post(`/api/bans/${banId}/unban`)
+      toast({
+        title: "✅ Sucesso!",
+        description: `O ban de ${banName} foi removido com sucesso.`,
       })
-
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `O ban de ${banName} foi removido com sucesso.`,
-        })
-        setTimeout(() => {
-          fetchBans()
-        }, 1500)
-      } else {
-        toast({
-          title: "❌ Erro!",
-          description: `Falha ao remover o ban de ${banName}.`,
-          variant: "destructive",
-        })
-      }
+      setTimeout(() => {
+        fetchBans()
+      }, 1500)
     } catch (error) {
       console.error("[bans-table] Erro ao desbanir:", error)
       toast({

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import { io, Socket } from "socket.io-client"
+import { getSession } from "next-auth/react"
 
 type SocketStatus = "connecting" | "connected" | "disconnected" | "error"
 
@@ -16,11 +17,18 @@ let socketInstance: Socket | null = null
 
 function getSocket(): Socket {
   if (!socketInstance) {
-    const url = typeof window !== "undefined" ? window.location.origin : ""
+    const url = process.env.NEXT_PUBLIC_SOCKET_URL
+      || process.env.NEXT_PUBLIC_BACKEND_URL
+      || (typeof window !== "undefined" ? window.location.origin : "http://localhost:4000")
     
     socketInstance = io(url, {
       path: "/api/socketio",
       transports: ["websocket", "polling"],
+      withCredentials: true,
+      auth: async (callback) => {
+        const session = await getSession()
+        callback({ token: session?.accessToken || "" })
+      },
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,

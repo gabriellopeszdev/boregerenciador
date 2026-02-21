@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { VolumeX } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface MutePlayerDialogProps {
   player: Player | null
@@ -56,37 +57,24 @@ export function MutePlayerDialog({ player, open, onOpenChange }: MutePlayerDialo
 
     setLoading(true)
     try {
-      const response = await fetch("/api/mutes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      await apiClient.post("/api/mutes", {
           name: player.name,
           reason: reason.trim(),
           time: muteTime,
           conn: conn.trim(),
           ipv4: ipv4.trim(),
           room: parseInt(room) ?? 0,
-        }),
-      })
+        }
+      )
 
-      if (response.ok) {
-        toast({
-          title: "✅ Sucesso!",
-          description: `${player.name} foi mutado com sucesso.`,
-        })
-        setTimeout(() => {
-          onOpenChange(false)
-          router.refresh()
-        }, 1500)
-      } else {
-        toast({
-          title: "❌ Erro!",
-          description: `Falha ao mutar ${player.name}. Tente novamente.`,
-          variant: "destructive",
-        })
-      }
+      toast({
+        title: "✅ Sucesso!",
+        description: `${player.name} foi mutado com sucesso.`,
+      })
+      setTimeout(() => {
+        onOpenChange(false)
+        router.refresh()
+      }, 1500)
     } catch (error) {
       console.error(`[mute-dialog] Erro ao mutar ${player.name}:`, error)
       toast({

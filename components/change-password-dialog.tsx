@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertTriangle, Loader2, Eye, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api-client"
 
 interface ChangePasswordDialogProps {
   player: Player | null
@@ -63,18 +64,7 @@ export function ChangePasswordDialog({ player, open, onOpenChange, onPasswordCha
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/players/${player.id}/password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ newPassword }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Erro ao alterar senha")
-      }
+      await apiClient.put(`/api/players/${player.id}/password`, { newPassword })
 
       toast({
         title: "Sucesso",

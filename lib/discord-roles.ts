@@ -2,7 +2,7 @@ import { getServerAuthSession } from "./auth"
 
 // --- SISTEMA DE CACHE EM MEMÓRIA ---
 // Isso previne o erro 429 (Rate Limit) durante o desenvolvimento
-const CACHE_DURATION = 1000 * 60 * 2 // 2 minutos de cache
+const CACHE_DURATION = 1000 * 60 * 10 // 10 minutos de cache (dev)
 const rolesCache = new Map<string, { data: UserRoles; timestamp: number }>()
 
 export interface UserRoles {

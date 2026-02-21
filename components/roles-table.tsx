@@ -11,6 +11,7 @@ import { motion } from "framer-motion"
 import { Search, Crown, Zap, ChevronLeft, ChevronRight, Loader2, Shield, Briefcase, Star, Gavel } from "lucide-react"
 import { LegendPlayerDialog } from "./roles/legend-player-dialog"
 import { ModPlayerDialog } from "./roles/mod-player-dialog"
+import { apiClient } from "@/lib/api-client"
 
 const API_URL = "/api/players"
 const PLAYERS_PER_PAGE = 10
@@ -42,10 +43,8 @@ export function RolesTable({ currentUser }: RolesTableProps) {
         searchTerm: searchTerm,
       })
 
-      const response = await fetch(`${API_URL}?${params}`)
-      if (!response.ok) throw new Error("Failed to fetch players")
-
-      const data = await response.json()
+      const response = await apiClient.get(`${API_URL}?${params}`)
+      const data = response.data
       
       setPlayers(data.players)
       setTotalCount(data.totalCount)
