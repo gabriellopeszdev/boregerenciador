@@ -6,8 +6,9 @@ import { DiscordService } from "../services/discord-service"
 
 function getStaffName(req: Request) {
   // Tenta pegar o nome do usuário do Discord
-  if (req.user && req.user.discordName) {
-    return req.user.discordName;
+  const user = (req as any).user;
+  if (user && user.discordName) {
+    return user.discordName;
   }
   const fromHeader = req.headers["x-staff-name"];
   return (typeof fromHeader === "string" && fromHeader.trim()) || "Sistema";

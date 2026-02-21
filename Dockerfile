@@ -22,6 +22,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV LOG_LEVEL=info
 
 # Copia arquivos necessários do build
 COPY --from=builder /app/public ./public
@@ -34,3 +35,5 @@ EXPOSE 3000
 
 # Inicia o server.js que contém Next.js + Socket.io
 CMD ["npm", "start"]
+
+
