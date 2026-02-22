@@ -22,6 +22,46 @@ export function createApiRouter() {
     next()
   })
 
+    router.get("/health", async (req, res) => {
+      try {
+        // Testa conexão com o banco
+        const result = await require("../../../lib/database").executeQuery("SELECT 1 AS ok");
+        const dbOk = Array.isArray(result) && result.length > 0 && result[0].ok === 1;
+
+        // Testa conexão com Discord (exemplo: busca guild)
+        let discordOk = false;
+        try {
+          const DiscordService = require("../services/discord-service").DiscordService;
+          const discordService = new DiscordService();
+          const guild = await discordService.getGuild();
+          discordOk = !!guild;
+        } catch (_) {}
+
+        // Testa Socket
+        const socketGateway = req.app?.locals?.socketGateway;
+        const socketOk = socketGateway && typeof socketGateway.getConnectedClientsCount === "function";
+
+        res.status(200).json({
+          status: "ok",
+          backend: "ok",
+          db: dbOk ? "ok" : "fail",
+          discord: discordOk ? "ok" : "fail",
+          socket: socketOk ? "ok" : "fail",
+          timestamp: new Date().toISOString(),
+        });
+      } catch (err) {
+        res.status(500).json({
+          status: "error",
+          backend: "ok",
+          db: "fail",
+          discord: "fail",
+          socket: "fail",
+          error: typeof err === "object" && err !== null && "message" in err ? (err as any).message : String(err),
+          timestamp: new Date().toISOString(),
+        });
+      }
+    });
+
   router.get("/public/stats", (req: any, res: any) => req.app.locals.adminController.getPublicStats(req, res))
   router.get("/public/recs", (req: any, res: any) => req.app.locals.adminController.getPublicRecs(req, res))
   router.get("/public/recs/:id", (req: any, res: any) => req.app.locals.adminController.downloadRec(req, res))

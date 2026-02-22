@@ -6,10 +6,11 @@ const dbConfig = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS === 'true',
-  connectionLimit: Number.parseInt(process.env.DB_CONNECTION_LIMIT || '3'),
+  connectionLimit: Number.parseInt(process.env.DB_CONNECTION_LIMIT || '10'),
   queueLimit: Number.parseInt(process.env.DB_QUEUE_LIMIT || '0'),
   idleTimeout: 30000,
   enableKeepAlive: true,
+  connectTimeout: Number.parseInt(process.env.DB_TIMEOUT || '60000'),
 }
 
 declare global {
