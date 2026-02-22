@@ -17,6 +17,23 @@ const nextConfig = {
         destination: isProd
           ? 'https://boregerenciador.azura.dev.br:4000/:path*'
           : 'http://localhost:4000/:path*',
+        has: [
+          {
+            type: 'host',
+            value: '',
+          },
+        ],
+        missing: [
+          {
+            type: 'header',
+            key: '',
+            value: '',
+          },
+        ],
+      },
+      {
+        source: '/api/auth/:path*',
+        destination: '/api/auth/:path*',
       },
     ];
   },
