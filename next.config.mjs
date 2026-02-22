@@ -10,12 +10,15 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
+    const isProd = process.env.NODE_ENV === 'production';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:4000/:path*',
+        destination: isProd
+          ? 'https://boregerenciador.azura.dev.br:4000/:path*'
+          : 'http://localhost:4000/:path*',
       },
-    ]
+    ];
   },
 }
 
