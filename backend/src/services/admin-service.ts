@@ -1,4 +1,4 @@
-import { encryptPassword } from "@/lib/encryption"
+import { encryptPassword } from "../../../lib/encryption"
 import { AdminRepository } from "../repositories/admin-repository"
 import type { SocketGateway } from "./socket-gateway"
 
