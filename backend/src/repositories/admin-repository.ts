@@ -1,5 +1,5 @@
-import { executeQuery } from "../../lib/database"
-import type { Ban, Mute, Player } from "../../lib/types"
+import { executeQuery } from "../../../lib/database"
+import type { Ban, Mute, Player } from "../../../lib/types"
 
 export class AdminRepository {
   async getPlayersPaginated(page: number, limit: number, searchTerm = ""): Promise<Player[]> {
