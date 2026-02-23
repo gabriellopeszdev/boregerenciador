@@ -6,6 +6,7 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY package.json package-lock.json* ./
+COPY .env .env
 
 
 # Remove pnpm-lock.yaml se existir para usar npm
