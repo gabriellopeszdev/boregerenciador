@@ -8,7 +8,7 @@
     "dev:frontend": "next dev",
     "dev:backend": "tsx backend/server.ts",
     "build": "next build",
-    "start": "concurrently -k --names FRONT,BACK --prefix \"[{time}] {name}\" --timestamp-format \"HH:mm:ss\" --prefix-colors \"blue.bold,magenta.bold\" \"npx next start\" \"npx tsx backend/server.ts\"",
+    "start": "concurrently -k --names FRONT,BACK --prefix \"[{time}] {name}\" --timestamp-format \"HH:mm:ss\" --prefix-colors \"blue.bold,magenta.bold\" \"npx next start -H 0.0.0.0\" \"npx tsx backend/server.ts\"",
     "lint": "next lint"
   },
   "dependencies": {

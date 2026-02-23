@@ -32,7 +32,7 @@ services:
       DISCORD_GERENTE_ROLE_ID: ${DISCORD_GERENTE_ROLE_ID}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/socket/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3
