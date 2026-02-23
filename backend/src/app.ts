@@ -8,7 +8,10 @@ import { isDevelopment, isProduction, logHttpRequest, logger } from "./lib/logge
 import { createApiRouter } from "./routes"
 
 export function createApp() {
+
   const app = express()
+  // Confia no primeiro proxy (Cloudflare, Docker, etc) para X-Forwarded-For
+  app.set('trust proxy', 1)
 
   // Helmet para headers de segurança
   app.use(helmet())
