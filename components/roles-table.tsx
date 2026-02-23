@@ -211,7 +211,7 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                     ))}
                   </TableBody>
                 </Table>
-                {players.length === 0 && (
+                {Array.isArray(players) && players.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">Nenhum player encontrado</div>
                 )}
               </div>
@@ -294,7 +294,7 @@ export function RolesTable({ currentUser }: RolesTableProps) {
                 ))}
               </div>
 
-              {players.length === 0 && !isLoading && (
+              {Array.isArray(players) && players.length === 0 && !isLoading && (
                 <div className="text-center py-8 text-muted-foreground">Nenhum player encontrado</div>
               )}
 

@@ -36,7 +36,7 @@ export function ModPlayerDialog({ player, open, onOpenChange, onSuccess }: ModPl
     try {
       const roomsArray = rooms.split(",").map(r => Number.parseInt(r.trim())).filter(r => !isNaN(r))
       
-      if (roomsArray.length === 0) {
+      if (Array.isArray(roomsArray) && roomsArray.length === 0) {
         toast({
           title: "❌ Erro!",
           description: "Insira pelo menos uma sala válida.",

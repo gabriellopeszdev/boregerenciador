@@ -13,7 +13,7 @@ const config: Config = {
   plugins: [
     require('tailwindcss-animate'),
   ],
-  presets: [require('@tailwindcss/postcss/preset')],
+  // presets: [require('@tailwindcss/postcss/preset')],
 }
 
 export default config

@@ -73,9 +73,10 @@ function isNonEmptyArray(value: any): value is any[] {
   }
   if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) {
     try {
-      return JSON.parse(value).length > 0;
+      const arr = JSON.parse(value);
+      return Array.isArray(arr) && arr.length > 0;
     } catch {
-      return false; 
+      return false;
     }
   }
   return false;

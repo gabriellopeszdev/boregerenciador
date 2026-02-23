@@ -84,7 +84,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     ([, config]) => config.theme || config.color,
   )
 
-  if (!colorConfig.length) {
+  if (!Array.isArray(colorConfig) || colorConfig.length === 0) {
     return null
   }
 
@@ -145,7 +145,7 @@ function ChartTooltipContent({
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
-    if (hideLabel || !payload?.length) {
+    if (hideLabel || !Array.isArray(payload) || payload.length === 0) {
       return null
     }
 
@@ -180,11 +180,11 @@ function ChartTooltipContent({
     labelKey,
   ])
 
-  if (!active || !payload?.length) {
+  if (!active || !Array.isArray(payload) || payload.length === 0) {
     return null
   }
 
-  const nestLabel = payload.length === 1 && indicator !== 'dot'
+  const nestLabel = Array.isArray(payload) && payload.length === 1 && indicator !== 'dot'
 
   return (
     <div
@@ -280,7 +280,7 @@ function ChartLegendContent({
   }) {
   const { config } = useChart()
 
-  if (!payload?.length) {
+  if (!Array.isArray(payload) || payload.length === 0) {
     return null
   }
 

@@ -36,7 +36,7 @@ function LogPanel({ endpoint, title, icon }: { endpoint: string; title: string; 
 
   const Icon = icon === "replay" ? Database : BarChart3;
 
-  const itemCount = data?.data?.length ?? data?.pagination?.total ?? "—";
+  const itemCount = Array.isArray(data?.data) ? data.data.length : (data?.pagination?.total ?? "—");
 
   return (
     <div className="bg-card rounded-xl border border-border flex flex-col overflow-hidden min-w-0 w-full">

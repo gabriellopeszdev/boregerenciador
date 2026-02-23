@@ -255,7 +255,7 @@ export function MutesTable() {
               ))}
             </div>
 
-            {mutes.length === 0 && (
+            {Array.isArray(mutes) && mutes.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 {searchTerm ? "Nenhum mute encontrado com essa busca" : "Nenhum mute registrado"}
               </div>

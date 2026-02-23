@@ -1,5 +1,5 @@
-"use client"
-
+  "use client"
+  
 import { useState, useEffect } from "react"
 import type { Player } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,13 +33,23 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
 
+  // Função utilitária para garantir array
+  function safeArray(val: any) {
+    if (Array.isArray(val)) return val;
+    if (val == null) return [];
+    return [val];
+  }
+
+
   useEffect(() => {
     async function fetchPlayers() {
       setIsLoading(true);
       try {
         const response = await apiClient.get(`${API_URL}?page=${currentPage}&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
         const data = response.data
-        setPlayers(data.players);
+        // Logar dados recebidos
+        console.debug('PlayersTable fetchPlayers', { players: data.players, totalCount: data.totalCount });
+        setPlayers(safeArray(data.players));
         setTotalCount(data.totalCount);
       } catch (error) {
         console.error("Error fetching players:", error);
@@ -195,7 +205,7 @@ const canChangePassword = (user: any) => {
                     ))}
                   </TableBody>
                 </Table>
-                {players.length === 0 && (
+                {safeArray(players).length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">Nenhum player encontrado</div>
                 )}
               </div>
@@ -254,7 +264,7 @@ const canChangePassword = (user: any) => {
               </div>
             </>
           )}
-          {players.length === 0 && !isLoading && (
+          {safeArray(players).length === 0 && !isLoading && (
             <div className="text-center py-8 text-muted-foreground">Nenhum player encontrado</div>
           )}
 

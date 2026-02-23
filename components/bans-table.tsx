@@ -228,7 +228,7 @@ export function BansTable() {
               ))}
             </div>
 
-            {bans.length === 0 && (
+            {Array.isArray(bans) && bans.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 {searchTerm ? "Nenhum ban encontrado com essa busca" : "Nenhum ban registrado"}
               </div>
