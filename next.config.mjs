@@ -19,7 +19,7 @@ const nextConfig = {
       {
         source: '/api/:path*',
         destination: isProd
-          ? 'https://boregerenciador.azura.dev.br:4000/:path*'
+          ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, '')}/:path*`
           : 'http://localhost:4000/:path*',
       },
     ];
