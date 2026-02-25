@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ]
 
   return (
-    <div className="flex flex-col lg:flex h-screen">
+    <div className="flex flex-col lg:flex-row h-screen bg-background text-foreground">
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -52,24 +52,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           x: sidebarOpen ? 0 : "-100%",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border lg:translate-x-0 lg:flex-shrink-0"
+        className="fixed inset-y-0 left-0 z-40 w-64 bg-background border-r border-border lg:translate-x-0 lg:flex-shrink-0 shadow-lg"
+        aria-label="Menu lateral"
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-6 border-b border-sidebar-border">
+          <div className="p-6 border-b border-border bg-background">
             <div className="flex items-center gap-2">
-              <Shield className="h-8 w-8 text-sidebar-accent" />
+              <Shield className="h-8 w-8 text-primary" aria-hidden="true" />
               <div>
-                <h1 className="text-xl font-bold text-sidebar-foreground">Bore Admin</h1>
-                <p className="text-sm text-sidebar-foreground/70">
-                  {session.user?.name} ({session.user?.role})
+                <h1 className="text-xl font-bold text-foreground">Bore Admin</h1>
+                <p className="text-sm text-muted-foreground">
+                  <span aria-label="Usuário logado">{session.user?.name}</span> <span className="sr-only">Função:</span>({session.user?.role})
                 </p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4">
+          <nav className="flex-1 p-4" aria-label="Navegação principal">
             <ul className="space-y-2">
               {menuItems.map((item) => {
                 const isActive = pathname === item.href
@@ -77,13 +78,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <li key={item.href}>
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
-                      className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      className="w-full justify-start gap-3 text-foreground hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary"
+                      aria-current={isActive ? "page" : undefined}
                       onClick={() => {
                         router.push(item.href)
                         setSidebarOpen(false)
                       }}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4" aria-hidden="true" />
                       {item.label}
                     </Button>
                   </li>
@@ -93,13 +95,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-sidebar-border">
+          <div className="p-4 border-t border-border">
             <Button
               variant="outline"
-              className="w-full justify-start gap-3 bg-transparent"
+              className="w-full justify-start gap-3 bg-transparent text-foreground"
               onClick={() => signOut({ callbackUrl: "/login" })}
+              aria-label="Sair do painel"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4" aria-hidden="true" />
               Sair
             </Button>
           </div>
@@ -108,19 +111,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Mobile menu button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button variant="outline" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        <Button variant="outline" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Abrir menu lateral">
+          {sidebarOpen ? <X className="h-4 w-4" aria-hidden="true" /> : <Menu className="h-4 w-4" aria-hidden="true" />}
         </Button>
       </div>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0 overflow-y-auto">
-        <div className="p-6 pt-20 lg:pt-4 h-full">{children}</div>
+      <main className="flex-1 min-w-0 overflow-y-auto bg-background text-foreground">
+        <div className="p-4 pt-20 lg:pt-4 h-full w-full max-w-7xl mx-auto">{children}</div>
       </main>
 
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu lateral" />
       )}
     </div>
   )

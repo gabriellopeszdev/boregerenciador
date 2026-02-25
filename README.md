@@ -11,7 +11,25 @@ Painel administrativo para gestão do servidor Bore, com frontend em Next.js e b
 
 ---
 
-## 🚀 Quick Start
+
+## 📖 Documentação da API (Scalar)
+
+O projeto já conta com documentação interativa da API utilizando [Scalar](https://scalar.com/) integrada ao Next.js:
+
+- **Documentação Pública:**
+  - URL: `/docs/public`
+  - Disponível para qualquer usuário, sem autenticação.
+  - Exibe todos os endpoints públicos (stats, replays, etc).
+
+- **Documentação Privada:**
+  - URL: `/docs/private`
+  - Requer login e permissão de Dono, Diretor ou Gerente.
+  - Exibe todos os endpoints administrativos (players, bans, mutes, cargos, configs) além dos públicos.
+
+Ambas as rotas usam o componente `ApiReference` do Scalar, consumindo os arquivos OpenAPI localizados em `lib/openapi-public.ts` e `lib/openapi-private.ts`.
+
+> Para acessar a documentação privada, faça login no sistema e acesse `/docs/private`.
+
 
 ```bash
 # 1. Clone o repositório
