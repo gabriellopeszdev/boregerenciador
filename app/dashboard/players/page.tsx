@@ -18,21 +18,25 @@ export default async function DashboardPage() {
   // Criar objeto currentUser com base nos roles do Discord
   const currentUser = {
     ...session.user,
+    // `dono` é usado em vários componentes para checagem de permissão
+    dono: userRoles.isCEO ? 1 : 0,
     ceo: userRoles.isCEO ? 1 : 0,
     diretor: userRoles.isDiretor ? 1 : 0,
-    gerente: userRoles.isGerente ? [1] : null,
+    gerente: userRoles.isGerente ? 1 : 0,
   }
 
   return (
-    <main className="flex flex-col items-center justify-start py-4 px-2">
-      <div className="w-full max-w-6xl mx-auto flex flex-col items-center mb-4">
-        <div className="flex items-center gap-3 mb-1">
-          <Users className="w-7 h-7 text-blue-500" />
-          <h1 className="text-2xl font-extrabold text-foreground drop-shadow-lg">Players</h1>
+    <main className="flex flex-col items-center justify-start py-1 px-2">
+      <div className="w-full max-w-4xl mx-auto flex flex-col items-center mb-1">
+        <div className="bg-blue-500/10 p-1 rounded-lg mb-0.5">
+          <Users className="h-6 w-6 text-blue-500" />
         </div>
-        <p className="text-sm text-muted-foreground text-center max-w-2xl">Visualize e gerencie todos os jogadores do servidor, aplique punições e altere permissões.</p>
+        <h1 className="text-base font-bold text-white tracking-tight">Players</h1>
+        <p className="text-zinc-500 text-xs">
+          Visualize e gerencie todos os jogadores do servidor, aplique punições e altere permissões.
+        </p>
       </div>
-      <div className="w-full max-w-6xl mx-auto">
+      <div className="w-full max-w-4xl mx-auto">
         <PlayersTable currentUser={currentUser} />
       </div>
     </main>

@@ -1,28 +1,21 @@
-  "use client"
-  
+"use client"
+
 import { useState, useEffect } from "react"
 import type { Player } from "@/lib/types"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { motion } from "framer-motion"
-import { Ban, VolumeX, Shield, Star, Briefcase, Gavel, MoreVertical, ChevronLeft, ChevronRight, Loader2, Key, Search } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Ban, VolumeX, Shield, Star, Briefcase, Gavel, ChevronLeft, ChevronRight, Loader2, Key, Search, Users } from "lucide-react"
 import { BanPlayerDialog } from "./ban-player-dialog"
 import { MutePlayerDialog } from "./mute-player-dialog"
 import { ChangePasswordDialog } from "./change-password-dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { apiClient } from "@/lib/api-client"
 
 const API_URL = "/api/players";
-const PLAYERS_PER_PAGE = 10;
+const PLAYERS_PER_PAGE = 6;
 
-interface PlayersTableProps {
-  currentUser: any;
-}
-
-export function PlayersTable({ currentUser }: PlayersTableProps) {
+export function PlayersTable({ currentUser }: { currentUser: any }) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,295 +24,141 @@ export function PlayersTable({ currentUser }: PlayersTableProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
-  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
-  // Função utilitária para garantir array
-  function safeArray(val: any) {
-    if (Array.isArray(val)) return val;
-    if (val == null) return [];
-    return [val];
+  const fetchPlayers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiClient.get(`${API_URL}?page=${currentPage}&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
+      setPlayers(Array.isArray(response.data.players) ? response.data.players : []);
+      setTotalCount(response.data.totalCount || 0);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-
-  useEffect(() => {
-    async function fetchPlayers() {
-      setIsLoading(true);
-      try {
-        const response = await apiClient.get(`${API_URL}?page=${currentPage}&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
-        const data = response.data
-        // Logar dados recebidos
-        console.debug('PlayersTable fetchPlayers', { players: data.players, totalCount: data.totalCount });
-        setPlayers(safeArray(data.players));
-        setTotalCount(data.totalCount);
-      } catch (error) {
-        console.error("Error fetching players:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchPlayers();
-  }, [currentPage, searchTerm]);
+  useEffect(() => { fetchPlayers(); }, [currentPage, searchTerm]);
 
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE);
 
-const getRoleIcon = (player: Player) => {
-  if (player.dono === 1) return <Shield className="h-4 w-4 text-yellow-500" />
-  if (player.diretor === 1) return <Shield className="h-4 w-4 text-purple-500" />
-  if (Array.isArray(player.admin) && player.admin.length > 0) return <Star className="h-4 w-4 text-blue-500" />
-  if (Array.isArray(player.gerente) && player.gerente.length > 0) return <Briefcase className="h-4 w-4 text-green-500" />
-  if (Array.isArray(player.mod) && player.mod.length > 0) return <Gavel className="h-4 w-4 text-orange-500" />
-  return null
-}
-
-const getRoleName = (player: Player) => {
-  if (player.dono === 1) return "CEO"
-  if (player.diretor === 1) return "Diretor"
-  if (Array.isArray(player.admin) && player.admin.length > 0) return "Admin"
-  if (Array.isArray(player.gerente) && player.gerente.length > 0) return "Gerente"
-  if (Array.isArray(player.mod) && player.mod.length > 0) return "Moderador"
-  return "Player"
-}
-
-const getRoleColor = (player: Player) => {
-  if (player.dono === 1) return "bg-yellow-500/20 text-yellow-300"
-  if (player.diretor === 1) return "bg-purple-500/20 text-purple-300"
-  if (Array.isArray(player.admin) && player.admin.length > 0) return "bg-blue-500/20 text-blue-300"
-  if (Array.isArray(player.gerente) && player.gerente.length > 0) return "bg-green-500/20 text-green-300"
-  if (Array.isArray(player.mod) && player.mod.length > 0) return "bg-orange-500/20 text-orange-300"
-  return "bg-gray-500/20 text-gray-300"
-}
-
-const canChangePassword = (user: any) => {
-  if (!user) return false
-  return user.dono === 1 || user.diretor === 1 || (user.gerente && Array.isArray(user.gerente) && user.gerente.length > 0)
-}
-
-  const handleBanPlayer = (player: Player) => {
-    setSelectedPlayer(player)
-    setBanDialogOpen(true)
+  const handleAction = (player: Player, type: 'ban' | 'mute' | 'pass') => {
+    setSelectedPlayer(player);
+    if (type === 'ban') setBanDialogOpen(true);
+    if (type === 'mute') setMuteDialogOpen(true);
+    if (type === 'pass') setPasswordDialogOpen(true);
   }
-
-  const handleMutePlayer = (player: Player) => {
-    setSelectedPlayer(player)
-    setMuteDialogOpen(true)
-  }
-
-  const handleChangePassword = (player: Player) => {
-    setSelectedPlayer(player)
-    setPasswordDialogOpen(true)
-  }
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => prev + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => prev - 1);
-  };
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <span>Players ({totalCount})</span>
-            <div className="flex items-center gap-2">
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar player..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="w-full mx-auto p-2 space-y-4 sm:max-w-[520px] md:max-w-[760px] lg:max-w-[920px]">
+      <Card className="bg-[#0a0a0a] border-zinc-900 shadow-xl mx-auto px-2">
+        {/* Barra de Ferramentas Integrada (compacta) */}
+        <div className="flex items-center justify-between px-3 py-0.5 border-b border-zinc-900">
+          <h2 className="text-xs font-semibold text-zinc-200">
+            Players <span className="text-zinc-600 font-normal ml-1">({totalCount})</span>
+          </h2>
+          <div className="relative w-48">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-zinc-600" />
+            <input
+              placeholder="Buscar player..."
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="w-full bg-[#111] border border-zinc-800 text-zinc-400 pl-8 pr-3 h-7 rounded-sm text-[11px] focus:outline-none focus:border-zinc-700 transition-colors"
+            />
+          </div>
+        </div>
+
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
+            <div className="flex justify-center items-center py-16"><Loader2 className="h-6 w-6 animate-spin text-zinc-800" /></div>
           ) : (
-            <>
-              {/* Desktop Table */}
-              <div className="hidden md:block rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>Cargo</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {players.map((player, index) => (
-                      <motion.tr
-                        key={player.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="hover:bg-muted/50"
-                      >
-                        <TableCell className="font-mono text-sm">{player.id}</TableCell>
-                        <TableCell className="font-medium">{player.name}</TableCell>
-                        <TableCell>
-                          <Badge className={`gap-1 ${getRoleColor(player)}`}>
-                            {getRoleIcon(player)}
-                            {getRoleName(player)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={player.loggedin === 1 ? "default" : "secondary"}>
-                            {player.loggedin === 1 ? "Online" : "Offline"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button size="sm" variant="outline" onClick={() => handleBanPlayer(player)} className="gap-1">
-                              <Ban className="h-3 w-3" />
-                              Ban
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleMutePlayer(player)} className="gap-1">
-                              <VolumeX className="h-3 w-3" />
-                              Mute
-                            </Button>
-                            {canChangePassword(currentUser) && (
-                              <Button size="sm" variant="outline" onClick={() => handleChangePassword(player)} className="gap-1">
-                                <Key className="h-3 w-3" />
-                                Senha
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </motion.tr>
-                    ))}
-                  </TableBody>
-                </Table>
-                {safeArray(players).length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">Nenhum player encontrado</div>
-                )}
-              </div>
-
-              {/* Mobile Cards */}
-              <div className="md:hidden space-y-4">
-                {players.map((player, index) => (
-                  <motion.div
-                    key={player.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
+              <div className="px-6 py-1"> 
+              <Table>
+              <TableHeader>
+                <TableRow className="border-zinc-900 hover:bg-transparent">
+                    <TableHead className="py-1 pl-8 text-sm uppercase tracking-wider text-zinc-400 font-semibold">ID</TableHead>
+                    <TableHead className="py-1 text-sm uppercase tracking-wider text-zinc-400 font-semibold">Nome</TableHead>
+                    <TableHead className="py-1 text-sm uppercase tracking-wider text-zinc-400 font-semibold text-center hidden lg:table-cell">Cargo</TableHead>
+                    <TableHead className="py-1 text-sm uppercase tracking-wider text-zinc-400 font-semibold">Status</TableHead>
+                    <TableHead className="py-1 pr-8 text-sm uppercase tracking-wider text-zinc-400 font-semibold text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {players.map((player) => (
+                  <TableRow 
+                    key={player.id} 
+                    className="border-zinc-900/50 hover:bg-zinc-900/40 transition-colors duration-150 group"
                   >
-                    <Card className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="text-sm font-mono text-muted-foreground">#{player.id}</div>
-                          <div className="font-medium">{player.name}</div>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleBanPlayer(player)}>
-                              <Ban className="h-4 w-4 mr-2" />
-                              Banir Player
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleMutePlayer(player)}>
-                              <VolumeX className="h-4 w-4 mr-2" />
-                              Mutar Player
-                            </DropdownMenuItem>
-                            {canChangePassword(currentUser) && (
-                              <DropdownMenuItem onClick={() => handleChangePassword(player)}>
-                                <Key className="h-4 w-4 mr-2" />
-                                Alterar Senha
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Badge className={`gap-1 ${getRoleColor(player)}`}>
-                          {getRoleIcon(player)}
-                          {getRoleName(player)}
-                        </Badge>
-                        <Badge variant={player.loggedin === 1 ? "default" : "secondary"}>
+                      <TableCell className="py-1 pl-8 font-mono text-sm text-zinc-300">#{player.id}</TableCell>
+                      <TableCell className="py-1 font-medium text-sm text-zinc-200">{player.name || "—"}</TableCell>
+                      <TableCell className="py-1 text-center hidden lg:table-cell">
+                      <Badge className="bg-zinc-900 border-zinc-800 text-zinc-400 text-xs font-semibold px-3 py-0 h-5 rounded-sm uppercase tracking-tighter">
+                        PLAYER
+                      </Badge>
+                    </TableCell>
+                      <TableCell className="py-1">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-2.5 w-2.5 rounded-full ${player.loggedin === 1 ? "bg-emerald-500" : "bg-zinc-700"}`} />
+                        <span className={`text-sm ${player.loggedin === 1 ? "text-emerald-500/80" : "text-zinc-500"}`}>
                           {player.loggedin === 1 ? "Online" : "Offline"}
-                        </Badge>
+                        </span>
                       </div>
-                    </Card>
-                  </motion.div>
+                    </TableCell>
+                      <TableCell className="py-1 pr-8 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                          <button onClick={() => handleAction(player, 'ban')} className="text-zinc-500 hover:text-white transition-colors" title="Banir">
+                            <Ban className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => handleAction(player, 'mute')} className="text-zinc-500 hover:text-white transition-colors" title="Mutar">
+                            <VolumeX className="h-4 w-4" />
+                          </button>
+                        {(currentUser?.dono === 1 || currentUser?.diretor === 1 || currentUser?.gerente === 1) && (
+                            <button onClick={() => handleAction(player, 'pass')} className="text-zinc-500 hover:text-white transition-colors" title="Senha">
+                              <Key className="h-4 w-4" />
+                            </button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))}
+              </TableBody>
+              </Table>
               </div>
-            </>
           )}
-          {safeArray(players).length === 0 && !isLoading && (
-            <div className="text-center py-8 text-muted-foreground">Nenhum player encontrado</div>
-          )}
+        </CardContent>
 
-          <div className="mt-4 flex items-center justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePrevPage}
-              disabled={currentPage === 1 || isLoading}
+        {/* Paginação fixa fora da área rolável (altura reduzida) */}
+          <div className="py-0.5 px-6 border-t border-zinc-900 flex items-center justify-between bg-transparent">
+          <p className="text-[9px] text-zinc-600 uppercase font-black tracking-widest">
+            Página {currentPage} / {totalPages || 1}
+          </p>
+          <div className="flex gap-3">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+                className="h-6 px-3 text-[10px] uppercase font-bold text-zinc-500 hover:bg-zinc-900 hover:text-white disabled:opacity-30"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
             >
-              <ChevronLeft className="h-4 w-4" />
+              Anterior
             </Button>
-            <span className="text-sm text-muted-foreground">Página {currentPage} de {totalPages}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages || isLoading}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+                className="h-6 px-3 text-[10px] uppercase font-bold text-zinc-500 hover:bg-zinc-900 hover:text-white disabled:opacity-30"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
             >
-              <ChevronRight className="h-4 w-4" />
+              Próximo
             </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
-      <BanPlayerDialog
-        player={selectedPlayer}
-        open={banDialogOpen}
-        onOpenChange={setBanDialogOpen}
-        currentUser={currentUser}
-      />
-
-      <MutePlayerDialog
-        player={selectedPlayer}
-        open={muteDialogOpen}
-        onOpenChange={setMuteDialogOpen}
-        currentUser={currentUser}
-      />
-
-      <ChangePasswordDialog
-        player={selectedPlayer}
-        open={passwordDialogOpen}
-        onOpenChange={setPasswordDialogOpen}
-        onPasswordChanged={() => {
-          setCurrentPage(1)
-          setTimeout(() => {
-            ;(async () => {
-              const response = await apiClient.get(`${API_URL}?page=1&limit=${PLAYERS_PER_PAGE}&searchTerm=${searchTerm}`)
-              const data = response.data as { players: Player[]; totalCount: number }
-              setPlayers(data.players)
-              setTotalCount(data.totalCount)
-            })()
-          }, 500)
-        }}
-      />
-    </>
+      <BanPlayerDialog player={selectedPlayer} open={banDialogOpen} onOpenChange={setBanDialogOpen} currentUser={currentUser} />
+      <MutePlayerDialog player={selectedPlayer} open={muteDialogOpen} onOpenChange={setMuteDialogOpen} currentUser={currentUser} />
+      <ChangePasswordDialog player={selectedPlayer} open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen} onPasswordChanged={fetchPlayers} />
+    </div>
   )
 }
