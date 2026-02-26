@@ -60,6 +60,11 @@ export class AdminService {
   }
 
   async unban(banId: number) {
+    const existing = await this.repository.getBanById(banId)
+    if (!existing) {
+      throw new Error("BAN_NOT_FOUND")
+    }
+
     await this.repository.deleteBan(banId)
     this.socketGateway.emit("command:unban", { id: banId })
   }
@@ -107,6 +112,11 @@ export class AdminService {
   }
 
   async unmute(muteId: number) {
+    const existing = await this.repository.getMuteById(muteId)
+    if (!existing) {
+      throw new Error("MUTE_NOT_FOUND")
+    }
+
     await this.repository.deleteMute(muteId)
     this.socketGateway.emit("command:unmute", { id: muteId })
   }
@@ -152,7 +162,7 @@ export class AdminService {
   }
 
   async updatePassword(playerId: number, newPassword: string) {
-    if (!newPassword || newPassword.length < 6) {
+    if (!newPassword || newPassword.length < 4 || newPassword.length > 6) {
       throw new Error("INVALID_PASSWORD")
     }
 

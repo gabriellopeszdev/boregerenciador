@@ -43,6 +43,26 @@ export function PlayersTable({ currentUser }: { currentUser: any }) {
 
   const totalPages = Math.ceil(totalCount / PLAYERS_PER_PAGE);
 
+  function parseJsonArray(value: any): number[] | null {
+    if (Array.isArray(value) && value.length > 0) return value
+    if (typeof value === "string" && value.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(value)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      } catch { /* ignore */ }
+    }
+    return null
+  }
+
+  function getPlayerCargo(player: Player) {
+    if (player.dono === 1) return { label: "Dono", color: "bg-yellow-500/20 text-yellow-300", icon: <Shield className="h-3 w-3" /> }
+    if (player.diretor === 1) return { label: "Diretor", color: "bg-purple-500/20 text-purple-300", icon: <Shield className="h-3 w-3" /> }
+    if (parseJsonArray(player.admin)) return { label: "Admin", color: "bg-blue-500/20 text-blue-300", icon: <Star className="h-3 w-3" /> }
+    if (parseJsonArray(player.gerente)) return { label: "Gerente", color: "bg-green-500/20 text-green-300", icon: <Briefcase className="h-3 w-3" /> }
+    if (parseJsonArray(player.mod)) return { label: "Mod", color: "bg-orange-500/20 text-orange-300", icon: <Gavel className="h-3 w-3" /> }
+    return { label: "PLAYER", color: "bg-gray-500/20 text-gray-400", icon: null }
+  }
+
   const handleAction = (player: Player, type: 'ban' | 'mute' | 'pass') => {
     setSelectedPlayer(player);
     if (type === 'ban') setBanDialogOpen(true);
@@ -93,9 +113,15 @@ export function PlayersTable({ currentUser }: { currentUser: any }) {
                       <TableCell className="py-1 pl-8 font-mono text-sm text-zinc-300">#{player.id}</TableCell>
                       <TableCell className="py-1 font-medium text-sm text-zinc-200">{player.name || "—"}</TableCell>
                       <TableCell className="py-1 text-center hidden lg:table-cell">
-                      <Badge className="bg-zinc-900 border-zinc-800 text-zinc-400 text-xs font-semibold px-3 py-0 h-5 rounded-sm uppercase tracking-tighter">
-                        PLAYER
-                      </Badge>
+                      {(() => {
+                        const cargo = getPlayerCargo(player)
+                        return (
+                          <Badge className={`gap-1 ${cargo.color} text-xs font-semibold px-3 py-0 h-5 rounded-sm uppercase tracking-tighter`}>
+                            {cargo.icon}
+                            {cargo.label}
+                          </Badge>
+                        )
+                      })()}
                     </TableCell>
                       <TableCell className="py-1">
                       <div className="flex items-center gap-3">

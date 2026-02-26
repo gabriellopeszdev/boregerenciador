@@ -9,6 +9,7 @@ export interface UserRoles {
   isCEO: boolean
   isDiretor: boolean
   isGerente: boolean
+  isModerador: boolean
   hasAnyPermission: boolean
 }
 
@@ -37,10 +38,12 @@ export async function getUserRoles(): Promise<UserRoles> {
     // Suporta múltiplos IDs de gerente separados por vírgula (ex: "id1,id2,id3")
     const gerenteRoleEnv = process.env.DISCORD_GERENTE_ROLE_ID || ""
     const gerenteRoleIds = gerenteRoleEnv.split(",").map(s => s.trim()).filter(Boolean)
+    const moderadorRoleEnv = process.env.DISCORD_MODERADOR_ROLE_ID || ""
+    const moderadorRoleIds = moderadorRoleEnv.split(",").map(s => s.trim()).filter(Boolean)
 
-    if (!guildId || !ceoRoleId || !diretorRoleId || gerenteRoleIds.length === 0) {
-      console.warn("[discord-roles] Variáveis de ambiente faltando (verifique CE0/DIRETOR/GERENTE).")
-      return { isCEO: false, isDiretor: false, isGerente: false, hasAnyPermission: false }
+    if (!guildId || !ceoRoleId || !diretorRoleId) {
+      console.warn("[discord-roles] Variáveis de ambiente faltando (verifique GUILD/CEO/DIRETOR).")
+      return { isCEO: false, isDiretor: false, isGerente: false, isModerador: false, hasAnyPermission: false }
     }
 
     // 2. SE NÃO TIVER CACHE, CHAMA A API
@@ -77,12 +80,16 @@ export async function getUserRoles(): Promise<UserRoles> {
     const isGerente = gerenteRoleIds.length > 0
       ? gerenteRoleIds.some(id => userRoles.includes(id))
       : false
+    const isModerador = moderadorRoleIds.length > 0
+      ? moderadorRoleIds.some(id => userRoles.includes(id))
+      : false
 
     const result: UserRoles = {
       isCEO: ceoRoleId ? userRoles.includes(ceoRoleId) : false,
       isDiretor: diretorRoleId ? userRoles.includes(diretorRoleId) : false,
       isGerente,
-      hasAnyPermission: (ceoRoleId ? userRoles.includes(ceoRoleId) : false) || (diretorRoleId ? userRoles.includes(diretorRoleId) : false) || isGerente
+      isModerador,
+      hasAnyPermission: (ceoRoleId ? userRoles.includes(ceoRoleId) : false) || (diretorRoleId ? userRoles.includes(diretorRoleId) : false) || isGerente || isModerador
     }
 
     // 3. SALVA NO CACHE GLOBAL

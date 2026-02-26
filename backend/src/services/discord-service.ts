@@ -36,11 +36,13 @@ export class DiscordService {
     const ceoRoleId = process.env.DISCORD_CEO_ROLE_ID
     const diretorRoleId = process.env.DISCORD_DIRETOR_ROLE_ID
     const gerenteRoleIds = (process.env.DISCORD_GERENTE_ROLE_ID || "").split(",").map((item) => item.trim()).filter(Boolean)
+    const moderadorRoleIds = (process.env.DISCORD_MODERADOR_ROLE_ID || "").split(",").map((item) => item.trim()).filter(Boolean)
 
     const isCeo = Boolean(ceoRoleId && roles.includes(ceoRoleId))
     const isDiretor = Boolean(diretorRoleId && roles.includes(diretorRoleId))
     const isGerente = gerenteRoleIds.some((roleId) => roles.includes(roleId))
-    const canManage = isCeo || isDiretor || isGerente
+    const isModerador = moderadorRoleIds.some((roleId) => roles.includes(roleId))
+    const canManage = isCeo || isDiretor || isGerente || isModerador
     const isStaff = canManage || staffRoleIds.some((roleId) => roles.includes(roleId))
 
     return {

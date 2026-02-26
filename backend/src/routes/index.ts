@@ -141,7 +141,7 @@ export function createApiRouter() {
     "/players/:id/password",
     requireManage,
     [
-      body("password").isString().trim().notEmpty().isLength({ min: 8, max: 64 }),
+      body("password").isString().trim().notEmpty().isLength({ min: 4, max: 6 }),
     ],
     (req: any, res: any) => {
       const errors = validationResult(req)

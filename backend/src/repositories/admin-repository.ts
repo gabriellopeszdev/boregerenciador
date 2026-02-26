@@ -81,6 +81,11 @@ export class AdminRepository {
     await executeQuery("DELETE FROM bans WHERE id = ?", [banId])
   }
 
+  async getBanById(banId: number): Promise<Ban | null> {
+    const rows = await executeQuery<Ban>("SELECT * FROM bans WHERE id = ? LIMIT 1", [banId])
+    return rows[0] || null
+  }
+
   async getMutesPaginated(page: number, limit: number, searchTerm = ""): Promise<Mute[]> {
     const offset = (page - 1) * limit
     let query = "SELECT * FROM mutes"
@@ -126,6 +131,11 @@ export class AdminRepository {
 
   async deleteMute(muteId: number): Promise<void> {
     await executeQuery("DELETE FROM mutes WHERE id = ?", [muteId])
+  }
+
+  async getMuteById(muteId: number): Promise<Mute | null> {
+    const rows = await executeQuery<Mute>("SELECT * FROM mutes WHERE id = ? LIMIT 1", [muteId])
+    return rows[0] || null
   }
 
   async setPlayerLegend(playerId: number, vipLevel: number, expirationDate: string): Promise<void> {

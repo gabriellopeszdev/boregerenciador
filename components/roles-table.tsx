@@ -74,7 +74,7 @@ export function RolesTable({ currentUser }: RolesTableProps) {
     if (parseJsonArray(player.admin)) return { label: "Admin", color: "bg-blue-500/20 text-blue-300", icon: <Star className="h-3 w-3" /> }
     if (parseJsonArray(player.gerente)) return { label: "Gerente", color: "bg-green-500/20 text-green-300", icon: <Briefcase className="h-3 w-3" /> }
     if (parseJsonArray(player.mod)) return { label: "Mod", color: "bg-orange-500/20 text-orange-300", icon: <Gavel className="h-3 w-3" /> }
-    return { label: "Nenhum", color: "bg-gray-500/20 text-gray-400", icon: null }
+    return { label: "PLAYER", color: "bg-gray-500/20 text-gray-400", icon: null }
   }
 
   const handleLegendPlayer = (player: Player) => {

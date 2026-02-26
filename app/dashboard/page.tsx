@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default async function DashboardPage() {
   const session = await getServerAuthSession()
-  console.log("AccessToken:", session?.accessToken);
+  // console.log("AccessToken:", session?.accessToken);
   if (!session) {
     redirect("/login")
   }

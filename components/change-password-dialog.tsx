@@ -53,10 +53,10 @@ export function ChangePasswordDialog({ player, open, onOpenChange, onPasswordCha
       return
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 4 || newPassword.length > 6) {
       toast({
         title: "Erro",
-        description: "A senha deve ter pelo menos 6 caracteres",
+        description: "A senha deve ter entre 4 e 6 caracteres",
         variant: "destructive",
       })
       return
@@ -64,7 +64,7 @@ export function ChangePasswordDialog({ player, open, onOpenChange, onPasswordCha
 
     setIsLoading(true)
     try {
-      await apiClient.put(`/api/players/${player.id}/password`, { newPassword })
+      await apiClient.put(`/api/players/${player.id}/password`, { password: newPassword })
 
       toast({
         title: "Sucesso",

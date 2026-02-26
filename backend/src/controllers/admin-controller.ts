@@ -102,6 +102,9 @@ export class AdminController {
       return res.json({ success: true })
     } catch (error) {
       logger.error({ err: error }, "bans_unban_error")
+      if (error instanceof Error && error.message === "BAN_NOT_FOUND") {
+        return res.status(404).json({ error: "Ban not found" })
+      }
       return res.status(500).json({ error: "Internal server error" })
     }
   }
@@ -155,6 +158,9 @@ export class AdminController {
       return res.json({ success: true })
     } catch (error) {
       logger.error({ err: error }, "mutes_unmute_error")
+      if (error instanceof Error && error.message === "MUTE_NOT_FOUND") {
+        return res.status(404).json({ error: "Mute not found" })
+      }
       return res.status(500).json({ error: "Internal server error" })
     }
   }
@@ -288,6 +294,8 @@ export class AdminController {
       ceoRoleId: process.env.DISCORD_CEO_ROLE_ID ?? null,
       diretorRoleId: process.env.DISCORD_DIRETOR_ROLE_ID ?? null,
       gerenteRoleId: process.env.DISCORD_GERENTE_ROLE_ID ?? null,
+      moderadorRoleId: process.env.DISCORD_MODERADOR_ROLE_ID ?? null,
+      staffRoleId: process.env.DISCORD_STAFF_ROLE_ID ?? null,
     })
   }
 

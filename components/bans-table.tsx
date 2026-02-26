@@ -45,7 +45,7 @@ export function BansTable() {
     try {
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: "6",
+        limit: "10",
         searchTerm: searchTerm,
       })
 
