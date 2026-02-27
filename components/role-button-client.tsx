@@ -19,7 +19,7 @@ export function RoleButtonClient({ initialCanManage = null }: Props) {
     const check = async () => {
       try {
         // Primeiro tentar GET (server-side DB-first)
-        const resp = await apiClient.get('/api/config/can-manage')
+        const resp = await apiClient.get('/config/can-manage')
         if (resp.status === 200) {
           const json = resp.data
           if (json.canManage !== undefined) {
@@ -31,7 +31,7 @@ export function RoleButtonClient({ initialCanManage = null }: Props) {
 
         // Se server-side não conseguiu (ou false), e temos token no cliente, POST token para checar no servidor via Discord
         if (session?.accessToken) {
-          const postResp = await apiClient.post('/api/config/can-manage', { token: session.accessToken })
+          const postResp = await apiClient.post('/config/can-manage', { token: session.accessToken })
           if (postResp.status === 200) {
             const json = postResp.data
             setHasPermission(Boolean(json.canManage))

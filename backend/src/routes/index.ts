@@ -147,6 +147,10 @@ export function createApiRouter() {
     (req: any, res: any) => {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
+        const { logger } = require("../lib/logger");
+        // Não logar o valor da senha — apenas seu comprimento
+        const pwdLen = req.body && typeof req.body.password === 'string' ? req.body.password.length : 0
+        logger.warn({ playerId: req.params.id, passwordLength: pwdLen, errors: errors.array() }, '[PASSWORD VALIDATION FAILED]')
         return res.status(400).json({ error: "Dados inválidos", details: errors.array() })
       }
       return req.app.locals.adminController.updatePlayerPassword(req, res)

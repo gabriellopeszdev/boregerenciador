@@ -20,7 +20,7 @@ export default function ResetVipButton({ initialIsCeo = null }: Props) {
   useEffect(() => {
     const check = async () => {
       try {
-        const resp = await apiClient.get('/api/config/is-ceo')
+        const resp = await apiClient.get('/config/is-ceo')
         if (resp.status === 200) {
           const json = resp.data
           if (json.isCeo) {
@@ -31,7 +31,7 @@ export default function ResetVipButton({ initialIsCeo = null }: Props) {
 
         // fallback: if server doesn't confirm, POST client token so server can check Discord
         if (session?.accessToken) {
-          const postResp = await apiClient.post('/api/config/is-ceo', { token: session.accessToken })
+          const postResp = await apiClient.post('/config/is-ceo', { token: session.accessToken })
           if (postResp.status === 200) {
             const json = postResp.data
             setIsCeo(Boolean(json.isCeo))
@@ -57,7 +57,7 @@ export default function ResetVipButton({ initialIsCeo = null }: Props) {
 
     setLoading(true)
     try {
-      const resp = await apiClient.post("/api/config/reset-vip", { token: session?.accessToken })
+      const resp = await apiClient.post("/config/reset-vip", { token: session?.accessToken })
       if (resp.status !== 200) {
         const err = resp.data || {}
         toast({ title: "Erro ao resetar", description: err?.error || "Erro desconhecido", variant: "destructive" })

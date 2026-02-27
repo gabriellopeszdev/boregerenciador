@@ -218,9 +218,12 @@ export class AdminController {
       if (Number.isNaN(playerId)) {
         return res.status(400).json({ error: "Invalid player ID" })
       }
+      const { password } = req.body
+      // Log minimal info for debugging: playerId and password length (do NOT log password value)
+      logger.warn({ playerId, passwordLength: typeof password === 'string' ? password.length : 0 }, '[PASSWORD CHANGE ATTEMPT]')
 
-      const { newPassword } = req.body
-      await this.adminService.updatePassword(playerId, newPassword)
+      await this.adminService.updatePassword(playerId, password)
+      logger.info({ playerId }, 'password_changed_success')
       return res.json({ message: "Senha alterada com sucesso", playerId })
     } catch (error) {
       if (error instanceof Error && error.message === "PLAYER_NOT_FOUND") {
@@ -228,7 +231,7 @@ export class AdminController {
       }
 
       if (error instanceof Error && error.message === "INVALID_PASSWORD") {
-        return res.status(400).json({ error: "A senha deve ter pelo menos 6 caracteres" })
+        return res.status(400).json({ error: "A senha deve ter entre 4 e 6 caracteres" })
       }
 
       logger.error({ err: error }, "players_password_error")

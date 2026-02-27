@@ -74,11 +74,12 @@ export function ChangePasswordDialog({ player, open, onOpenChange, onPasswordCha
       handleClose()
       onPasswordChanged?.()
     } catch (error) {
-      toast({
-        title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao alterar senha",
-        variant: "destructive",
-      })
+        const serverMessage = (error as any)?.response?.data?.error || (error instanceof Error ? error.message : "Erro ao alterar senha")
+        toast({
+          title: "Erro",
+          description: serverMessage,
+          variant: "destructive",
+        })
     } finally {
       setIsLoading(false)
     }

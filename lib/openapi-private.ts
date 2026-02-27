@@ -367,7 +367,7 @@ export const privateOpenApiSpec = {
                   newPassword: {
                     type: 'string',
                     minLength: 6,
-                    description: 'Nova senha (mínimo 6 caracteres)',
+                    description: 'Nova senha (mínimo 4 caracteres, máximo 6 caracteres)',
                   },
                 },
               },
@@ -385,7 +385,7 @@ export const privateOpenApiSpec = {
             },
           },
           '400': {
-            description: 'Senha inválida (faltando ou menos de 6 caracteres)',
+            description: 'Senha inválida (faltando ou com menos de 4 ou mais de 6 caracteres)',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/Error' },
