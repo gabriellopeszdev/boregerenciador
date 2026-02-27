@@ -19,7 +19,7 @@ export async function getUserRoles(): Promise<UserRoles> {
 
     // Sem sessão = sem permissão
     if (!session?.user?.id || !session.accessToken) {
-      return { isCEO: false, isDiretor: false, isGerente: false, hasAnyPermission: false }
+      return { isCEO: false, isDiretor: false, isGerente: false, isModerador: false, hasAnyPermission: false }
     }
 
     const userId = session.user.id
@@ -66,12 +66,12 @@ export async function getUserRoles(): Promise<UserRoles> {
       if (cached) return cached.data
       
       // Se não tem nada, infelizmente retorna falso
-      return { isCEO: false, isDiretor: false, isGerente: false, hasAnyPermission: false }
+      return { isCEO: false, isDiretor: false, isGerente: false, isModerador: false, hasAnyPermission: false }
     }
 
     if (!response.ok) {
       console.error(`[discord-roles] Erro API Discord (${response.status})`)
-      return { isCEO: false, isDiretor: false, isGerente: false, hasAnyPermission: false }
+      return { isCEO: false, isDiretor: false, isGerente: false, isModerador: false, hasAnyPermission: false }
     }
 
     const member = await response.json()
@@ -102,7 +102,7 @@ export async function getUserRoles(): Promise<UserRoles> {
 
   } catch (error) {
     console.error("[discord-roles] Erro fatal:", error)
-    return { isCEO: false, isDiretor: false, isGerente: false, hasAnyPermission: false }
+    return { isCEO: false, isDiretor: false, isGerente: false, isModerador: false, hasAnyPermission: false }
   }
 }
 

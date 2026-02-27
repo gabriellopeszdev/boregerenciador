@@ -86,7 +86,8 @@ export function createApiRouter() {
         accessToken,
         isStaff: permissions.isStaff,
         isCeo: permissions.isCeo,
-        canManage: permissions.canManage
+        canManage: permissions.canManage,
+        isModerador: (permissions as any).isModerador || false,
       };
     }
     // Log igual ao requireManage

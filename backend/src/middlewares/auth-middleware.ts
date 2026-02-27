@@ -8,6 +8,7 @@ export type AuthContext = {
   isStaff: boolean
   isCeo: boolean
   canManage: boolean
+  isModerador?: boolean
 }
 
 export type AuthenticatedRequest = Request & {
@@ -58,6 +59,7 @@ export function createAuthMiddlewares(discordService: DiscordService) {
         isStaff: permissions.isStaff,
         isCeo: permissions.isCeo,
         canManage: permissions.canManage,
+        isModerador: (permissions as any).isModerador || false,
       }
 
       return next()

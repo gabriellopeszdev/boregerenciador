@@ -2,6 +2,7 @@ interface DiscordRoleResult {
   isStaff: boolean
   isCeo: boolean
   canManage: boolean
+  isModerador: boolean
 }
 
 export class DiscordService {
@@ -29,7 +30,7 @@ export class DiscordService {
   async checkPermissions(token: string): Promise<DiscordRoleResult> {
     const roles = await this.getRolesFromToken(token)
     if (!roles) {
-      return { isStaff: false, isCeo: false, canManage: false }
+      return { isStaff: false, isCeo: false, canManage: false, isModerador: false }
     }
 
     const staffRoleIds = (process.env.DISCORD_STAFF_ROLE_ID || "").split(",").map((item) => item.trim()).filter(Boolean)
@@ -49,6 +50,7 @@ export class DiscordService {
       isStaff,
       isCeo,
       canManage,
+      isModerador,
     }
   }
 
